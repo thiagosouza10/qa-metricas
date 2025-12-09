@@ -709,122 +709,195 @@ class QADashboardNova {
             doc.setFont('helvetica', 'normal');
             doc.text(`Relatório: ${this.metricas.equipeResponsavel} | ${this.metricas.periodoAnalise} | ${this.metricas.dataGeracao}`, 20, 30);
             
-            // Capturar dashboard completo e dividir corretamente sem distorção
+            // Capturar tópicos agrupados conforme solicitado
             try {
                 const dashboardElement = document.getElementById('dashboard');
                 const margin = 15;
                 const availableWidth = pageWidth - (margin * 2);
-                let currentY = 40; // Reduzido para aproveitar melhor o espaço
                 let pageNumber = 1;
-                const headerHeight = 40;
                 const footerHeight = 20;
+                const totalPages = 3; // 3 páginas conforme reorganização
                 
-                // Capturar dashboard completo uma única vez
-                // Escala menor para que mais conteúdo caiba na primeira página
-                const canvas = await html2canvas(dashboardElement, {
-                    backgroundColor: '#ffffff',
-                    scale: 1.0, // Escala reduzida para melhor ajuste
-                    useCORS: true,
-                    logging: false,
-                    allowTaint: true
-                });
+                // Função auxiliar para coletar elementos de um tópico
+                const collectTopicElements = (topicTitleText) => {
+                    let topicTitleRow = null;
+                    let allContent = [];
+                    
+                    if (topicTitleText === 'Resumo de Análise') {
+                        // Para o resumo, buscar pela card com o título
+                        // Buscar todas as rows (filhos diretos do dashboard)
+                        const allRows = Array.from(dashboardElement.children).filter(child => 
+                            child.nodeType === 1 && child.classList && child.classList.contains('row')
+                        );
+                        for (let row of allRows) {
+                            const cardTitle = row.querySelector('h5.card-title');
+                            if (cardTitle && cardTitle.textContent.includes('Resumo de Análise')) {
+                                topicTitleRow = row;
+                                allContent = [row];
+                                break;
+                            }
+                        }
+                    } else {
+                        // Para os outros tópicos, buscar por h4.text-primary
+                        // Buscar todas as rows (filhos diretos do dashboard)
+                        const allRows = Array.from(dashboardElement.children).filter(child => 
+                            child.nodeType === 1 && child.classList && child.classList.contains('row')
+                        );
+                        
+                        for (let i = 0; i < allRows.length; i++) {
+                            const h4 = allRows[i].querySelector('h4.text-primary');
+                            if (h4 && h4.textContent.includes(topicTitleText)) {
+                                topicTitleRow = allRows[i];
+                                
+                                // Coletar todo o conteúdo do tópico até o próximo título
+                                allContent = [topicTitleRow]; // Incluir o título
+                                
+                                // Continuar coletando as próximas rows até encontrar o próximo tópico
+                                for (let j = i + 1; j < allRows.length; j++) {
+                                    const nextRow = allRows[j];
+                                    
+                                    // Verificar se é o próximo tópico (tem h4.text-primary)
+                                    const nextTitle = nextRow.querySelector('h4.text-primary');
+                                    if (nextTitle) break; // Encontrou próximo tópico, parar
+                                    
+                                    // Adicionar esta row ao conteúdo (mesmo que não tenha mb-4)
+                                    allContent.push(nextRow);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    
+                    return allContent;
+                };
                 
-                const imgData = canvas.toDataURL('image/png', 1.0);
-                const imgWidth = availableWidth;
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                
-                // Altura disponível na primeira página (com cabeçalho) - aumentar para manter métricas juntas
-                const firstPageAvailableHeight = pageHeight - currentY - footerHeight + 20;
-                
-                // Altura disponível nas páginas seguintes (sem cabeçalho)
-                const nextPageAvailableHeight = pageHeight - 10 - footerHeight;
-                
-                // Verificar se cabe em uma página
-                if (imgHeight <= firstPageAvailableHeight) {
-                    // Cabe tudo em uma página
-                    doc.addImage(imgData, 'PNG', margin, currentY, imgWidth, imgHeight);
+                // Função auxiliar para adicionar elementos em uma página
+                const addElementsToPage = async (elements) => {
+                    if (elements.length === 0) return false;
+                    
+                    // Criar nova página (exceto para a primeira)
+                    if (pageNumber > 1) {
+            doc.addPage();
+                    }
+                    
+                    // Adicionar cabeçalho do relatório na primeira página
+                    if (pageNumber === 1) {
+                        doc.setFillColor(52, 144, 219);
+                        doc.rect(0, 0, pageWidth, 35, 'F');
+                        doc.setTextColor(255, 255, 255);
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+                        doc.text('ARGO - Métricas QA', 20, 20);
+                        doc.setFontSize(9);
+                        doc.setFont('helvetica', 'normal');
+                        doc.text(`Relatório: ${this.metricas.equipeResponsavel} | ${this.metricas.periodoAnalise} | ${this.metricas.dataGeracao}`, 20, 30);
+                    }
+                    
+                    // Ocultar todos os elementos do dashboard exceto os que queremos
+                    // Buscar todos os filhos diretos do dashboard que são rows
+                    const allRows = Array.from(dashboardElement.children).filter(child => 
+                        child.nodeType === 1 && child.classList && child.classList.contains('row')
+                    );
+                    const hiddenElements = [];
+                    
+                    // Criar conjunto de elementos a mostrar (incluindo os elementos e suas rows pai)
+                    const elementsToShow = new Set();
+                    elements.forEach(el => {
+                        elementsToShow.add(el);
+                        // Se o elemento não é uma row, encontrar sua row pai
+                        if (!el.classList || !el.classList.contains('row')) {
+                            let parent = el.parentElement;
+                            while (parent && parent !== dashboardElement) {
+                                if (parent.classList && parent.classList.contains('row')) {
+                                    elementsToShow.add(parent);
+                                    break;
+                                }
+                                parent = parent.parentElement;
+                            }
+                        }
+                    });
+                    
+                    allRows.forEach(row => {
+                        let shouldShow = false;
+                        
+                        // Verificar se esta row está na lista de elementos a mostrar
+                        if (elementsToShow.has(row)) {
+                            shouldShow = true;
+                        } else {
+                            // Verificar se algum elemento da lista está dentro desta row
+                            for (let targetElement of elements) {
+                                if (row.contains(targetElement)) {
+                                    shouldShow = true;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if (!shouldShow) {
+                            const originalDisplay = row.style.display;
+                            row.style.display = 'none';
+                            hiddenElements.push({ element: row, display: originalDisplay });
+                        }
+                    });
+                    
+                    // Aguardar para garantir que a ocultação seja aplicada
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                    
+                    // Capturar o dashboard (apenas elementos visíveis serão capturados)
+                    const canvas = await html2canvas(dashboardElement, {
+                        backgroundColor: '#ffffff',
+                        scale: 1.2,
+                        useCORS: true,
+                        logging: false,
+                        allowTaint: true
+                    });
+                    
+                    // Restaurar visibilidade de todos os elementos
+                    hiddenElements.forEach(({ element, display }) => {
+                        element.style.display = display || '';
+                    });
+                    
+                    const imgData = canvas.toDataURL('image/png', 1.0);
+                    const imgWidth = availableWidth;
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                    
+                    // Calcular posição Y inicial
+                    let startY = pageNumber === 1 ? 45 : 10;
+                    const availableHeight = pageHeight - startY - footerHeight;
+                    
+                    // Ajustar altura se necessário
+                    let finalHeight = imgHeight;
+                    if (imgHeight > availableHeight) {
+                        finalHeight = availableHeight;
+                    }
+                    
+                    // Adicionar imagem na página
+                    doc.addImage(imgData, 'PNG', margin, startY, imgWidth, finalHeight);
+                    
+                    // Adicionar rodapé
                     doc.setFontSize(8);
                     doc.setTextColor(128, 128, 128);
-                    doc.text('Página 1 de 1', pageWidth - 40, pageHeight - 10);
-                } else {
-                    // Precisa dividir em múltiplas páginas
-                    let sourceY = 0;
-                    let isFirstPage = true;
+                    doc.text(`Página ${pageNumber} de ${totalPages}`, pageWidth - 40, pageHeight - 10);
                     
-                    // Calcular total de páginas necessárias
-                    let remainingHeight = imgHeight - firstPageAvailableHeight;
-                    let totalPagesNeeded = 1;
-                    if (remainingHeight > 0) {
-                        totalPagesNeeded += Math.ceil(remainingHeight / nextPageAvailableHeight);
-                    }
-                    
-                    while (sourceY < canvas.height) {
-                        // Determinar altura disponível na página atual
-                        const pageAvailableHeight = isFirstPage ? firstPageAvailableHeight : nextPageAvailableHeight;
-                        const pageStartY = isFirstPage ? currentY : 10;
-                        
-                        // Calcular quanto da imagem (em pixels do canvas) cabe nesta página
-                        const remainingCanvasHeight = canvas.height - sourceY;
-                        
-                        if (remainingCanvasHeight <= 0) {
-                            break; // Não há mais conteúdo
-                        }
-                        
-                        // Converter altura disponível da página para pixels do canvas
-                        // Usar Math.floor para evitar problemas de arredondamento
-                        const canvasHeightForPage = Math.floor((pageAvailableHeight / imgHeight) * canvas.height);
-                        
-                        // Altura real a usar (não pode exceder o que resta)
-                        const sourceHeight = Math.min(canvasHeightForPage, remainingCanvasHeight);
-                        
-                        if (sourceHeight <= 0) {
-                            break; // Altura inválida, sair
-                        }
-                        
-                        // Altura de exibição proporcional
-                        const displayHeight = (sourceHeight / canvas.height) * imgHeight;
-                        
-                        // Criar canvas temporário para esta parte da imagem (garantir que não haja duplicação)
-                        const tempCanvas = document.createElement('canvas');
-                        tempCanvas.width = canvas.width;
-                        tempCanvas.height = sourceHeight;
-                        const tempCtx = tempCanvas.getContext('2d');
-                        tempCtx.drawImage(
-                            canvas,
-                            0, sourceY, canvas.width, sourceHeight,  // Source rectangle
-                            0, 0, canvas.width, sourceHeight        // Destination rectangle
-                        );
-                        const tempImgData = tempCanvas.toDataURL('image/png', 1.0);
-                        
-                        // Adicionar imagem na página atual
-                        doc.addImage(
-                            tempImgData,
-                            'PNG',
-                            margin,
-                            pageStartY,
-                            imgWidth,
-                            displayHeight
-                        );
-                        
-                        // Adicionar rodapé
-                        doc.setFontSize(8);
-                        doc.setTextColor(128, 128, 128);
-                        doc.text(`Página ${pageNumber} de ${totalPagesNeeded}`, pageWidth - 40, pageHeight - 10);
-                        
-                        // Avançar para próxima parte (em pixels do canvas)
-                        sourceY += sourceHeight;
-                        
-                        // Verificar se terminou
-                        if (sourceY >= canvas.height) {
-                            break; // Terminou todo o conteúdo
-                        }
-                        
-                        // Se ainda há conteúdo, criar nova página
-                        doc.addPage();
-                        pageNumber++;
-                        isFirstPage = false;
-                    }
-                }
+                    pageNumber++;
+                    return true;
+                };
+                
+                // Página 1: Falhas durante o Ciclo de Desenvolvimento (sozinho)
+                const falhasElements = collectTopicElements('Falhas durante o Ciclo de Desenvolvimento');
+                await addElementsToPage(falhasElements);
+                
+                // Página 2: Métricas Críticas + Métricas de Eficiência (juntos)
+                const metricasCriticasElements = collectTopicElements('Métricas Críticas');
+                const metricasEficienciaElements = collectTopicElements('Métricas de Eficiência');
+                const combinedElements = [...metricasCriticasElements, ...metricasEficienciaElements];
+                await addElementsToPage(combinedElements);
+                
+                // Página 3: Comparação Métricas VS Metas + Resumo de Análise (juntos)
+                const comparacaoElements = collectTopicElements('Comparação Métricas VS Metas');
+                const resumoElements = collectTopicElements('Resumo de Análise');
+                const finalElements = [...comparacaoElements, ...resumoElements];
+                await addElementsToPage(finalElements);
                 
                 // Adicionar observações se houver, em nova página
                 if (this.metricas.observacoes && this.metricas.observacoes.trim()) {
@@ -835,14 +908,14 @@ class QADashboardNova {
                     doc.setFillColor(52, 144, 219);
                     doc.rect(0, 0, pageWidth, 30, 'F');
                     doc.setTextColor(255, 255, 255);
-            doc.setFontSize(14);
-            doc.setFont('helvetica', 'bold');
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
                     doc.text('Observações Adicionais', 20, 20);
                     
                     // Conteúdo
-            doc.setTextColor(0, 0, 0);
-            doc.setFontSize(11);
-            doc.setFont('helvetica', 'normal');
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'normal');
                 const splitObservacoes = doc.splitTextToSize(this.metricas.observacoes, pageWidth - 40);
                     doc.text(splitObservacoes, 20, 45);
 
