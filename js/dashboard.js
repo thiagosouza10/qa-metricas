@@ -670,6 +670,13 @@ class QADashboardNova {
                 return;
             }
 
+            // Verificar se o dashboard está visível
+            const dashboardElement = document.getElementById('dashboard');
+            if (!dashboardElement || dashboardElement.classList.contains('hidden')) {
+                alert('⚠️ Por favor, calcule as métricas primeiro antes de gerar o PDF.');
+                return;
+            }
+
             // Mostrar loading
             const btnPdf = document.getElementById('gerar-pdf');
             const originalText = btnPdf.innerHTML;
@@ -689,234 +696,168 @@ class QADashboardNova {
             const pageWidth = doc.internal.pageSize.getWidth();
             const pageHeight = doc.internal.pageSize.getHeight();
             
-            // === PÁGINA 1: CABEÇALHO E RESUMO ===
-            
-            // Cabeçalho com gradiente simulado
+            // Adicionar cabeçalho com informações do relatório
             doc.setFillColor(52, 144, 219); // Azul
-            doc.rect(0, 0, pageWidth, 40, 'F');
+            doc.rect(0, 0, pageWidth, 35, 'F');
             
-            // Logo/Título principal
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(20);
+            doc.setFontSize(18);
             doc.setFont('helvetica', 'bold');
-            doc.text('Argo - Métricas QA', 20, 25);
+            doc.text('ARGO - Métricas QA', 20, 20);
             
-            // Informações do relatório
-            doc.setTextColor(0, 0, 0);
-            doc.setFontSize(11);
+            doc.setFontSize(9);
             doc.setFont('helvetica', 'normal');
-            doc.text(`Relatório gerado em: ${this.metricas.dataGeracao}`, 20, 55);
-            doc.text(`Equipe: ${this.metricas.equipeResponsavel}`, 20, 65);
-            doc.text(`Período: ${this.metricas.periodoAnalise}`, 20, 75);
-
-            // Status geral em card destacado
-            const statusColor = this.getStatusColor(this.metricas.statusGeral);
-            doc.setFillColor(statusColor[0], statusColor[1], statusColor[2]);
-            doc.roundedRect(20, 85, 80, 20, 5, 5, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-            doc.text(`Status Geral: ${this.metricas.statusGeral}`, 30, 98);
-
-            // Resetar cor
-            doc.setTextColor(0, 0, 0);
-
-            // Falhas durante o ciclo de Desenvolvimento
-            doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Falhas durante o Ciclo de Desenvolvimento', 20, 115);
-
-            // Box para destacar as falhas
-            doc.setDrawColor(200, 200, 200);
-            doc.setLineWidth(0.5);
-            doc.roundedRect(20, 120, pageWidth - 40, 75, 3, 3);
-
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'normal');
-            let yPosFalhas = 130;
-            doc.text(`Falha de Requisito: ${this.metricas.falhaRequisito}`, 25, yPosFalhas);
-            yPosFalhas += 10;
-            doc.text(`Falha Manual Pré-Release: ${this.metricas.falhaManualPreRelease}`, 25, yPosFalhas);
-            yPosFalhas += 10;
-            doc.text(`Falha Automatizada Pré-Release: ${this.metricas.falhaAutomatizadaPreRelease}`, 25, yPosFalhas);
-            yPosFalhas += 10;
-            doc.text(`Falha Manual Release: ${this.metricas.falhaManualRelease}`, 25, yPosFalhas);
-            yPosFalhas += 10;
-            doc.text(`Falha Automatizada Release: ${this.metricas.falhaAutomatizadaRelease}`, 25, yPosFalhas);
-            yPosFalhas += 10;
-            doc.setTextColor(231, 76, 60); // Vermelho
-            doc.text(`Falha em Produção: ${this.metricas.falhaProducao}`, 25, yPosFalhas);
-            doc.setTextColor(0, 0, 0);
-            yPosFalhas += 10;
-            doc.setFont('helvetica', 'bold');
-            doc.text(`Total de Falhas: ${this.metricas.totalFalhas}`, 25, yPosFalhas);
-
-            // === PÁGINA 2: MÉTRICAS PRINCIPAIS ===
-            doc.addPage();
+            doc.text(`Relatório: ${this.metricas.equipeResponsavel} | ${this.metricas.periodoAnalise} | ${this.metricas.dataGeracao}`, 20, 30);
             
-            // Título da página
-            doc.setFontSize(18);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Métricas', 20, 25);
-            
-            // Card Taxa de Escape
-            this.drawMetricCardPDF(doc, 20, 35, 'Taxa de Escape', `${this.metricas.taxaEscape}%`, 'Meta: < 5%', 
-                this.metricas.taxaEscape <= 5 ? [39, 174, 96] : [231, 76, 60]);
-            
-            // Card MTTR
-            this.drawMetricCardPDF(doc, 105, 35, 'MTTR', `${this.metricas.mttr}h`, 'Meta: < 8h', 
-                this.metricas.mttr <= 8 ? [39, 174, 96] : [231, 76, 60]);
-            
-            // Card Automação
-            this.drawMetricCardPDF(doc, 20, 75, 'Taxa de Automação', `${this.metricas.taxaAutomacao}%`, 'Meta: > 70%', 
-                this.metricas.taxaAutomacao >= 70 ? [39, 174, 96] : [231, 76, 60]);
-            
-            // Card Acerto
-            this.drawMetricCardPDF(doc, 105, 75, 'Taxa de Acerto', `${this.metricas.taxaAcerto}%`, 'Meta: > 85%', 
-                this.metricas.taxaAcerto >= 85 ? [39, 174, 96] : [231, 76, 60]);
-            
-            // Card Aceitação de História de Usuário
-            const aceitacaoHistoriasCard = this.metricas.aceitacaoHistorias || 0;
-            const statusAceitacaoCard = this.metricas.statusAceitacaoHistorias || 'BOM';
-            let aceitacaoColor = [39, 174, 96]; // Verde padrão
-            if (statusAceitacaoCard === 'EXCELENTE') {
-                aceitacaoColor = [39, 174, 96]; // Verde
-            } else if (statusAceitacaoCard === 'BOM') {
-                aceitacaoColor = [52, 144, 219]; // Azul
-            } else if (statusAceitacaoCard === 'ATENCAO') {
-                aceitacaoColor = [243, 156, 18]; // Amarelo
-            } else {
-                aceitacaoColor = [231, 76, 60]; // Vermelho
-            }
-            this.drawMetricCardPDF(doc, 20, 115, 'Aceitação de História de Usuário', `${aceitacaoHistoriasCard.toFixed(1)}%`, `Meta: ≥ 90% (${statusAceitacaoCard})`, aceitacaoColor);
-
-            // Defects vs Bugs
-            doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Defeitos vs Bugs', 20, 175);
-
-            this.drawMetricCardPDF(doc, 20, 185, 'Defeitos Abertos', this.metricas.defectsAbertos.toString(), 'Desenvolvimento', [243, 156, 18]);
-            this.drawMetricCardPDF(doc, 105, 185, 'defeitos Fechados', this.metricas.defectsFechados.toString(), 'Desenvolvimento', [39, 174, 96]);
-            this.drawMetricCardPDF(doc, 20, 225, 'Bugs Abertos', this.metricas.bugsAbertos.toString(), 'Produção', [231, 76, 60]);
-            this.drawMetricCardPDF(doc, 105, 225, 'Bugs Fechados', this.metricas.bugsFechados.toString(), 'Produção', [39, 174, 96]);
-
-            // === PÁGINA 3: GRÁFICOS ===
-            doc.addPage();
-            
-            // Título da página de gráficos
-            doc.setFontSize(18);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Análise Visual das Métricas', 20, 25);
-
-            // Gráfico 1: Falhas durante o Ciclo de Desenvolvimento (Topo - Largura completa)
+            // Capturar dashboard completo e dividir corretamente sem distorção
             try {
-                const canvasFalhas = document.getElementById('falhasChart');
-                if (canvasFalhas) {
-                    const imgData = await this.captureChartAsImage(canvasFalhas);
-                    // Título do gráfico
-                    doc.setFontSize(12);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text('Falhas durante o Ciclo de Desenvolvimento', 20, 35);
-                    // Gráfico com largura completa
-                    const imgWidth = pageWidth - 40; // Largura total menos margens
-                    const imgHeight = 55;
-                    doc.addImage(imgData, 'PNG', 20, 42, imgWidth, imgHeight);
+                const dashboardElement = document.getElementById('dashboard');
+                const margin = 15;
+                const availableWidth = pageWidth - (margin * 2);
+                let currentY = 45;
+                let pageNumber = 1;
+                const headerHeight = 45;
+                const footerHeight = 20;
+                
+                // Capturar dashboard completo uma única vez
+                const canvas = await html2canvas(dashboardElement, {
+                    backgroundColor: '#ffffff',
+                    scale: 1.2,
+                    useCORS: true,
+                    logging: false,
+                    allowTaint: true
+                });
+                
+                const imgData = canvas.toDataURL('image/png', 1.0);
+                const imgWidth = availableWidth;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                // Altura disponível na primeira página (com cabeçalho)
+                const firstPageAvailableHeight = pageHeight - currentY - footerHeight;
+                
+                // Altura disponível nas páginas seguintes (sem cabeçalho)
+                const nextPageAvailableHeight = pageHeight - 10 - footerHeight;
+                
+                // Verificar se cabe em uma página
+                if (imgHeight <= firstPageAvailableHeight) {
+                    // Cabe tudo em uma página
+                    doc.addImage(imgData, 'PNG', margin, currentY, imgWidth, imgHeight);
+                    doc.setFontSize(8);
+                    doc.setTextColor(128, 128, 128);
+                    doc.text('Página 1 de 1', pageWidth - 40, pageHeight - 10);
+                } else {
+                    // Precisa dividir em múltiplas páginas
+                    let sourceY = 0;
+                    let isFirstPage = true;
+                    
+                    // Calcular total de páginas necessárias
+                    let remainingHeight = imgHeight - firstPageAvailableHeight;
+                    let totalPagesNeeded = 1;
+                    if (remainingHeight > 0) {
+                        totalPagesNeeded += Math.ceil(remainingHeight / nextPageAvailableHeight);
+                    }
+                    
+                    while (sourceY < canvas.height) {
+                        // Determinar altura disponível na página atual
+                        const pageAvailableHeight = isFirstPage ? firstPageAvailableHeight : nextPageAvailableHeight;
+                        const pageStartY = isFirstPage ? currentY : 10;
+                        
+                        // Calcular quanto da imagem (em pixels do canvas) cabe nesta página
+                        const remainingCanvasHeight = canvas.height - sourceY;
+                        
+                        if (remainingCanvasHeight <= 0) {
+                            break; // Não há mais conteúdo
+                        }
+                        
+                        // Converter altura disponível da página para pixels do canvas
+                        // Usar Math.floor para evitar problemas de arredondamento
+                        const canvasHeightForPage = Math.floor((pageAvailableHeight / imgHeight) * canvas.height);
+                        
+                        // Altura real a usar (não pode exceder o que resta)
+                        const sourceHeight = Math.min(canvasHeightForPage, remainingCanvasHeight);
+                        
+                        if (sourceHeight <= 0) {
+                            break; // Altura inválida, sair
+                        }
+                        
+                        // Altura de exibição proporcional
+                        const displayHeight = (sourceHeight / canvas.height) * imgHeight;
+                        
+                        // Criar canvas temporário para esta parte da imagem (garantir que não haja duplicação)
+                        const tempCanvas = document.createElement('canvas');
+                        tempCanvas.width = canvas.width;
+                        tempCanvas.height = sourceHeight;
+                        const tempCtx = tempCanvas.getContext('2d');
+                        tempCtx.drawImage(
+                            canvas,
+                            0, sourceY, canvas.width, sourceHeight,  // Source rectangle
+                            0, 0, canvas.width, sourceHeight        // Destination rectangle
+                        );
+                        const tempImgData = tempCanvas.toDataURL('image/png', 1.0);
+                        
+                        // Adicionar imagem na página atual
+                        doc.addImage(
+                            tempImgData,
+                            'PNG',
+                            margin,
+                            pageStartY,
+                            imgWidth,
+                            displayHeight
+                        );
+                        
+                        // Adicionar rodapé
+                        doc.setFontSize(8);
+                        doc.setTextColor(128, 128, 128);
+                        doc.text(`Página ${pageNumber} de ${totalPagesNeeded}`, pageWidth - 40, pageHeight - 10);
+                        
+                        // Avançar para próxima parte (em pixels do canvas)
+                        sourceY += sourceHeight;
+                        
+                        // Verificar se terminou
+                        if (sourceY >= canvas.height) {
+                            break; // Terminou todo o conteúdo
+                        }
+                        
+                        // Se ainda há conteúdo, criar nova página
+                        doc.addPage();
+                        pageNumber++;
+                        isFirstPage = false;
+                    }
                 }
-            } catch (e) {
-                console.log('Erro ao capturar gráfico de Falhas:', e);
-            }
-
-            // Gráfico 2: Comparação com Metas (Meio - Largura completa)
-            // Espaçamento maior após o gráfico 1 (termina em ~97, então começa em 125)
-            let yStartMetas = 125;
-            try {
-                const canvasMetas = document.getElementById('metasChart');
-                if (canvasMetas) {
-                    const imgData = await this.captureChartAsImage(canvasMetas);
-                    // Título do gráfico
-                    doc.setFontSize(12);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text('Comparação com Metas', 20, yStartMetas);
-                    // Gráfico com largura completa
-                    const imgWidth = pageWidth - 40;
-                    const imgHeight = 55;
-                    doc.addImage(imgData, 'PNG', 20, yStartMetas + 7, imgWidth, imgHeight);
-                }
-            } catch (e) {
-                console.log('Erro ao capturar gráfico de Metas:', e);
-            }
-
-            // Gráfico 3: Defects vs Bugs (Embaixo - Largura completa)
-            // Espaçamento maior após o gráfico 2 (termina em ~187, então começa em 215)
-            let yStartDefects = 215;
-            try {
-                const canvasDefectsBugs = document.getElementById('defectsBugsChart');
-                if (canvasDefectsBugs) {
-                    const imgData = await this.captureChartAsImage(canvasDefectsBugs);
-                    // Título do gráfico
-                    doc.setFontSize(12);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text('Defeitos vs Bugs', 20, yStartDefects);
-                    // Gráfico com largura completa
-                    const imgWidth = pageWidth - 40;
-                    const imgHeight = 55;
-                    doc.addImage(imgData, 'PNG', 20, yStartDefects + 7, imgWidth, imgHeight);
-                }
-            } catch (e) {
-                console.log('Erro ao capturar gráfico Defeitos vs Bugs:', e);
-            }
-
-            // === PÁGINA 5: ANÁLISE EXECUTIVA ===
+                
+                // Adicionar observações se houver, em nova página
+                if (this.metricas.observacoes && this.metricas.observacoes.trim()) {
             doc.addPage();
-            
-            doc.setFontSize(18);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Análise Executiva', 20, 30);
-
-            // Pontos positivos
+                    pageNumber++;
+                    
+                    // Cabeçalho
+                    doc.setFillColor(52, 144, 219);
+                    doc.rect(0, 0, pageWidth, 30, 'F');
+                    doc.setTextColor(255, 255, 255);
             doc.setFontSize(14);
             doc.setFont('helvetica', 'bold');
-            doc.setTextColor(39, 174, 96); // Verde
-            doc.text('Pontos Positivos:', 20, 50);
+                    doc.text('Observações Adicionais', 20, 20);
+                    
+                    // Conteúdo
             doc.setTextColor(0, 0, 0);
             doc.setFontSize(11);
             doc.setFont('helvetica', 'normal');
-            this.metricas.pontosPositivos.forEach((ponto, index) => {
-                doc.text(`- ${ponto}`, 25, 65 + (index * 12));
-            });
-
-            // Pontos de atenção
-            const yPos = 65 + (this.metricas.pontosPositivos.length * 12) + 20;
-            doc.setFontSize(14);
-            doc.setFont('helvetica', 'bold');
-            doc.setTextColor(243, 156, 18); // Amarelo
-            doc.text('Pontos de Atencao:', 20, yPos);
-            doc.setTextColor(0, 0, 0);
-            doc.setFontSize(11);
-            doc.setFont('helvetica', 'normal');
-            this.metricas.pontosAtencao.forEach((ponto, index) => {
-                doc.text(`- ${ponto}`, 25, yPos + 15 + (index * 12));
-            });
-
-            // Observações
-            if (this.metricas.observacoes) {
-                const obsYPos = yPos + (this.metricas.pontosAtencao.length * 12) + 30;
-                doc.setFontSize(14);
-                doc.setFont('helvetica', 'bold');
-                doc.setTextColor(52, 144, 219); // Azul
-                doc.text('Observações:', 20, obsYPos);
-                doc.setTextColor(0, 0, 0);
-                doc.setFontSize(11);
-                doc.setFont('helvetica', 'normal');
-                // Quebrar texto longo em múltiplas linhas
                 const splitObservacoes = doc.splitTextToSize(this.metricas.observacoes, pageWidth - 40);
-                doc.text(splitObservacoes, 20, obsYPos + 15);
-            }
+                    doc.text(splitObservacoes, 20, 45);
 
             // Rodapé
-            doc.setFontSize(9);
+                    doc.setFontSize(8);
             doc.setTextColor(128, 128, 128);
-            doc.text('Relatório gerado automaticamente pelo Dashboard QA', pageWidth - 100, pageHeight - 10);
+                    doc.text(`Página ${pageNumber}`, pageWidth - 40, pageHeight - 10);
+                }
+                
+            } catch (error) {
+                console.error('Erro ao capturar dashboard:', error);
+                // Fallback: mostrar mensagem de erro
+                doc.setFontSize(12);
+                doc.setTextColor(231, 76, 60);
+                doc.text('Erro ao capturar dashboard. Por favor, tente novamente.', 20, 50);
+            }
 
             // Gerar nome do arquivo
             const agora = new Date();
