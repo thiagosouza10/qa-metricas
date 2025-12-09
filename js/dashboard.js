@@ -933,9 +933,15 @@ class QADashboardNova {
                 doc.text('Erro ao capturar dashboard. Por favor, tente novamente.', 20, 50);
             }
 
-            // Gerar nome do arquivo
+            // Gerar nome do arquivo com horário local
             const agora = new Date();
-            const dataHora = agora.toISOString().replace(/[:.]/g, '-').slice(0, 19);
+            const ano = agora.getFullYear();
+            const mes = String(agora.getMonth() + 1).padStart(2, '0');
+            const dia = String(agora.getDate()).padStart(2, '0');
+            const horas = String(agora.getHours()).padStart(2, '0');
+            const minutos = String(agora.getMinutes()).padStart(2, '0');
+            const segundos = String(agora.getSeconds()).padStart(2, '0');
+            const dataHora = `${ano}-${mes}-${dia}_${horas}-${minutos}-${segundos}`;
             const nomeArquivo = `${this.metricas.equipeResponsavel}-${dataHora}.pdf`;
 
             // Download do PDF
