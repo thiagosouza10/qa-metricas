@@ -333,19 +333,19 @@ class QADashboardNova {
         if (falhaManualRelease >= limiteAlto) {
             avisos.push({
                 tipo: 'atencao',
-                mensagem: `⚠️ Atenção: ${falhaManualRelease} falha(s) manual(is) detectada(s) em Release. Considere melhorar os testes pré-release.`
+                mensagem: `⚠️ Atenção: ${falhaManualRelease} falha(s) manual(is) detectada(s) durante os testes da Release. É importante verificar o porque essas falhas não foram detectadas na fase de Pré-Release.`
             });
         }
         if (falhaAutomatizadaRelease >= limiteAlto) {
             avisos.push({
                 tipo: 'atencao',
-                mensagem: `⚠️ Atenção: ${falhaAutomatizadaRelease} falha(s) automatizada(s) detectada(s) em Release. Revise a cobertura de testes automatizados.`
+                mensagem: `⚠️ Atenção: ${falhaAutomatizadaRelease} falha(s) automatizada(s) detectada(s) durante os testes da Release. É importante verificar o porque essas falhas não foram detectadas na fase de Pré-Release.`
             });
         }
         if (falhaProducao >= limiteAlto) {
             avisos.push({
                 tipo: 'atencao',
-                mensagem: `🚨 Atenção Crítica: ${falhaProducao} falha(s) detectada(s) em Produção. Ação imediata necessária!`
+                mensagem: `🚨 Atenção Crítica: ${falhaProducao} falha(s) detectada(s) em Produção. Ação imediata necessária! É importante verificar o porque essas falhas não foram detectadas na fase de Pré-Release e Release.`
             });
         } else if (falhaProducao > 0) {
             avisos.push({
