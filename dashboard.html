@@ -683,9 +683,7 @@
             <!-- Tópico: Falhas durante o Ciclo de Desenvolvimento -->
             <div class="row mb-4">
                 <div class="col-12">
-                    <h3 class="section-title mb-3">
-                        <i class="bi bi-exclamation-triangle-fill text-danger"></i> Falhas durante o Ciclo de Desenvolvimento
-                    </h3>
+                    <h4 class="text-primary mb-3">🔴 Falhas durante o Ciclo de Desenvolvimento</h4>
                 </div>
             </div>
             
@@ -750,9 +748,7 @@
             <!-- Tópico: Métricas Críticas -->
             <div class="row mb-4">
                 <div class="col-12">
-                    <h3 class="section-title mb-3">
-                        <i class="bi bi-star-fill text-warning"></i> Métricas Críticas
-                    </h3>
+                    <h4 class="text-primary mb-3">🎯 Métricas Críticas</h4>
                 </div>
             </div>
             
@@ -790,7 +786,7 @@
                     <div class="card metric-card">
                         <div class="card-body">
                             <div id="aceitacao-historias-valor" class="metric-value status-bom">90%</div>
-                            <div class="metric-label">Aceitação de História de Usuário</div>
+                            <div class="metric-label">Aceitação de Histórias</div>
                             <div class="progress progress-custom">
                                 <div id="aceitacao-historias-progress" class="progress-bar bg-success" role="progressbar" style="width: 90%"></div>
                             </div>
@@ -802,31 +798,11 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Gráfico Comparação com Metas (Métricas Críticas) -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header bg-white">
-                            <h5 class="card-title mb-0">
-                                <i class="bi bi-bar-chart"></i> Comparação com Metas - Métricas Críticas
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="chart-container">
-                                <canvas id="metasChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <!-- Tópico: Métricas de Eficiência -->
             <div class="row mb-4">
                 <div class="col-12">
-                    <h3 class="section-title mb-3">
-                        <i class="bi bi-lightning-charge-fill text-primary"></i> Métricas de Eficiência
-                    </h3>
+                    <h4 class="text-primary mb-3">⚡ Métricas de Eficiência</h4>
                 </div>
             </div>
             
@@ -927,6 +903,30 @@
                         <div class="card-body">
                             <div class="chart-container">
                                 <canvas id="defectsBugsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tópico: Comparação Métricas VS Metas -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h4 class="text-primary mb-3">📊 Comparação Métricas VS Metas</h4>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-bar-chart"></i> Comparação Métricas VS Metas
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="metasChart"></canvas>
                             </div>
                         </div>
                     </div>
