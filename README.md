@@ -35,7 +35,7 @@ Esta versão do dashboard foi criada para **facilitar a vida do QA** na coleta, 
 #### ⚡ **Métricas de Eficiência (Tier 2)**
 - **Taxa de Automação** (> 70%) - Percentual de testes automatizados
 - **Taxa de Acerto** (> 85%) - Percentual de bugs válidos reportados
-- **Defects vs Bugs** - Status de problemas em desenvolvimento e produção
+- **Defeitos vs Bugs** - Status de problemas em desenvolvimento e produção
 
 ### 🎨 **Interface Moderna**
 - **Design Clean** com Bootstrap 5
@@ -86,7 +86,7 @@ Esta versão do dashboard foi criada para **facilitar a vida do QA** na coleta, 
 ##### **⚡ Métricas de Eficiência**
 - **Taxa de Automação**: Percentual de testes automatizados
 - **Taxa de Acerto**: Percentual de bugs válidos reportados
-- **Defects Abertos/Fechados**: Problemas em ambiente de desenvolvimento
+- **Defeitos Abertos/Fechados**: Problemas em ambiente de desenvolvimento
 - **Bugs Abertos/Fechados**: Problemas em ambiente de produção
 
 - Clique em **"Calcular Métricas"**
@@ -98,7 +98,7 @@ Esta versão do dashboard foi criada para **facilitar a vida do QA** na coleta, 
 - **Métricas Principais**: Cards com valores e comparação com metas
 - **Gráficos Interativos**: 
   - Distribuição de Falhas (bar chart)
-  - Defects vs Bugs (pizza chart)
+  - Defeitos vs Bugs (pizza chart)
   - Comparação com Metas (bar chart)
 - **Análise Automática**: Pontos positivos e de atenção
 - **Avisos Inteligentes**: Alertas sobre falhas críticas
@@ -177,7 +177,7 @@ Esta métrica rastreia todos os tipos de falhas identificadas durante o ciclo co
 4. **Taxa de Acerto** (> 85%) - Percentual de bugs válidos reportados
 
 ### **🐛 Status de Qualidade**
-5. **Defects Abertos** - Problemas em ambiente de desenvolvimento
+5. **Defeitos Abertos** - Problemas em ambiente de desenvolvimento
 6. **Defects Fechados** - Problemas corrigidos antes do deploy
 7. **Bugs Abertos** - Problemas em ambiente de produção
 8. **Bugs Fechados** - Problemas corrigidos em produção

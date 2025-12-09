@@ -32,10 +32,6 @@ class QADashboardNova {
             this.gerarPDF();
         });
 
-        document.getElementById('exportar-dados').addEventListener('click', () => {
-            this.exportarJSON();
-        });
-
         // Navegação suave
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', (e) => {
@@ -65,6 +61,10 @@ class QADashboardNova {
             // MTTR
             mttr: parseFloat(document.getElementById('mttr').value) || 0,
             
+            // Aceitação de História de Usuário
+            historiasTotais: parseInt(document.getElementById('historias-totais').value) || 0,
+            historiasAceitas: parseInt(document.getElementById('historias-aceitas').value) || 0,
+            
             // Taxa de Automação
             taxaAutomacao: parseFloat(document.getElementById('taxa-automacao').value) || 0,
             
@@ -72,8 +72,8 @@ class QADashboardNova {
             taxaAcerto: parseFloat(document.getElementById('taxa-acerto').value) || 0,
             
             // Defects vs Bugs
-            defectsAbertos: parseInt(document.getElementById('defects-abertos').value) || 0,
-            defectsFechados: parseInt(document.getElementById('defects-fechados').value) || 0,
+            defectsAbertos: parseInt(document.getElementById('defeitos-abertos').value) || 0,
+            defectsFechados: parseInt(document.getElementById('defeitos-fechados').value) || 0,
             bugsAbertos: parseInt(document.getElementById('bugs-abertos').value) || 0,
             bugsFechados: parseInt(document.getElementById('bugs-fechados').value) || 0,
             
@@ -117,6 +117,11 @@ class QADashboardNova {
         // Taxa de correção de defects (desenvolvimento)
         this.metricas.taxaCorrecaoDefects = totalDefects > 0 ? (defectsFechados / totalDefects) * 100 : 0;
 
+        // Aceitação de História de Usuário
+        const { historiasTotais, historiasAceitas } = this.metricas;
+        this.metricas.aceitacaoHistorias = historiasTotais > 0 ? (historiasAceitas / historiasTotais) * 100 : 0;
+        this.metricas.statusAceitacaoHistorias = this.classificarAceitacaoHistorias(this.metricas.aceitacaoHistorias);
+
         // Status geral baseado nas métricas
         this.metricas.statusGeral = this.calcularStatusGeral();
 
@@ -152,9 +157,19 @@ class QADashboardNova {
         // Bugs em produção (menor é melhor)
         if ((this.metricas.bugsAbertos + this.metricas.bugsFechados) <= 3) score += 1;
 
+        // Aceitação de História de Usuário (maior é melhor, >= 90%)
+        if (this.metricas.aceitacaoHistorias >= 90) score += 1;
+
         if (score >= 5) return 'EXCELENTE';
         if (score >= 4) return 'BOM';
         if (score >= 2) return 'ATENCAO';
+        return 'CRITICO';
+    }
+
+    classificarAceitacaoHistorias(percentual) {
+        if (percentual >= 90) return 'EXCELENTE';
+        if (percentual >= 80) return 'BOM';
+        if (percentual >= 70) return 'ATENCAO';
         return 'CRITICO';
     }
 
@@ -184,6 +199,11 @@ class QADashboardNova {
         }
         if (this.metricas.totalFalhas > 0 && this.metricas.falhaProducao === 0) {
             pontos.push('Todas as falhas identificadas antes da produção');
+        }
+        if (this.metricas.aceitacaoHistorias >= 90) {
+            pontos.push('Excelente aceitação de histórias de usuário');
+        } else if (this.metricas.aceitacaoHistorias >= 80) {
+            pontos.push('Boa aceitação de histórias de usuário');
         }
 
         return pontos.length > 0 ? pontos : ['Métricas em análise'];
@@ -219,6 +239,15 @@ class QADashboardNova {
         if (this.metricas.bugsAbertos > 0) {
             pontos.push(`Bugs abertos em produção: ${this.metricas.bugsAbertos}`);
         }
+        if (this.metricas.aceitacaoHistorias < 90) {
+            if (this.metricas.aceitacaoHistorias < 70) {
+                pontos.push(`Aceitação de histórias crítica: ${this.metricas.aceitacaoHistorias.toFixed(1)}%`);
+            } else if (this.metricas.aceitacaoHistorias < 80) {
+                pontos.push(`Aceitação de histórias requer atenção: ${this.metricas.aceitacaoHistorias.toFixed(1)}%`);
+            } else {
+                pontos.push(`Aceitação de histórias abaixo do excelente: ${this.metricas.aceitacaoHistorias.toFixed(1)}%`);
+            }
+        }
 
         return pontos.length > 0 ? pontos : ['Todas as métricas dentro das metas'];
     }
@@ -240,6 +269,18 @@ class QADashboardNova {
         
         // MTTR
         document.getElementById('mttr-valor').textContent = `${this.metricas.mttr}h`;
+        
+        // Aceitação de História de Usuário
+        const aceitacaoHistorias = this.metricas.aceitacaoHistorias || 0;
+        document.getElementById('aceitacao-historias-valor').textContent = `${aceitacaoHistorias.toFixed(1)}%`;
+        const statusAceitacao = this.metricas.statusAceitacaoHistorias || 'BOM';
+        const statusElementAceitacao = document.getElementById('aceitacao-historias-status');
+        if (statusElementAceitacao) {
+            statusElementAceitacao.innerHTML = `<span class="badge badge-status ${this.getStatusClass(statusAceitacao)}">${statusAceitacao}</span>`;
+        }
+        // Atualizar classe do valor baseado no status
+        const valorElementAceitacao = document.getElementById('aceitacao-historias-valor');
+        valorElementAceitacao.className = `metric-value ${this.getStatusClassMetric(statusAceitacao)}`;
         
         // Taxa de Automação
         document.getElementById('automacao-valor').textContent = `${this.metricas.taxaAutomacao}%`;
@@ -295,6 +336,34 @@ class QADashboardNova {
 
         // Taxa de Acerto
         document.getElementById('acerto-progress').style.width = `${this.metricas.taxaAcerto}%`;
+
+        // Aceitação de História de Usuário
+        const aceitacaoHistorias = this.metricas.aceitacaoHistorias || 0;
+        const progressBarAceitacao = document.getElementById('aceitacao-historias-progress');
+        progressBarAceitacao.style.width = `${Math.min(aceitacaoHistorias, 100)}%`;
+        
+        // Atualizar cor baseada no status
+        const statusAceitacao = this.metricas.statusAceitacaoHistorias || 'BOM';
+        progressBarAceitacao.className = 'progress-bar';
+        if (statusAceitacao === 'EXCELENTE') {
+            progressBarAceitacao.classList.add('bg-success');
+        } else if (statusAceitacao === 'BOM') {
+            progressBarAceitacao.classList.add('bg-primary');
+        } else if (statusAceitacao === 'ATENCAO') {
+            progressBarAceitacao.classList.add('bg-warning');
+        } else {
+            progressBarAceitacao.classList.add('bg-danger');
+        }
+    }
+
+    getStatusClassMetric(status) {
+        switch (status) {
+            case 'EXCELENTE': return 'status-excelente';
+            case 'BOM': return 'status-bom';
+            case 'ATENCAO': return 'status-atencao';
+            case 'CRITICO': return 'status-critico';
+            default: return 'status-bom';
+        }
     }
 
     atualizarPontos() {
@@ -350,7 +419,7 @@ class QADashboardNova {
         } else if (falhaProducao > 0) {
             avisos.push({
                 tipo: 'atencao',
-                mensagem: `⚠️ Atenção: ${falhaProducao} falha(s) detectada(s) em Produção. Revise os processos de teste.`
+                mensagem: `⚠️ Atenção: ${falhaProducao} falha(s) detectada(s) em Produção. Revise todo o processo para verificar onde essas falhas poderiam ser evitadas.`
             });
         }
 
@@ -359,7 +428,7 @@ class QADashboardNova {
         if (falhaRequisito >= limiteAlto) {
             parabens.push({
                 tipo: 'sucesso',
-                mensagem: `✅ Parabéns! ${falhaRequisito} falha(s) de requisito detectada(s) cedo. O time está identificando problemas antes do desenvolvimento!`
+                mensagem: `✅ Parabéns! ${falhaRequisito} falha(s) de requisito detectada(s) cedo. O time está identificando inconsistências antes do desenvolvimento!`
             });
         }
         if (falhaManualPreRelease >= limiteAlto) {
@@ -465,7 +534,7 @@ class QADashboardNova {
             this.charts.defectsBugs = new Chart(ctxDefectsBugs, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Defects (Dev)', 'Bugs (Prod)'],
+                    labels: ['Defeitos (Dev)', 'Bugs (Prod)'],
                     datasets: [{
                         data: [23, 5],
                         backgroundColor: ['#f39c12', '#e74c3c'],
@@ -491,16 +560,16 @@ class QADashboardNova {
             this.charts.metas = new Chart(ctxMetas, {
                 type: 'bar',
                 data: {
-                    labels: ['Taxa Escape', 'MTTR', 'Automação', 'Acerto'],
+                    labels: ['Taxa Escape', 'MTTR', 'Automação', 'Acerto', 'Aceitação de Histórias'],
                     datasets: [{
                         label: 'Atual',
-                        data: [3.2, 6.2, 72.3, 85.7],
+                        data: [3.2, 6.2, 72.3, 85.7, 90],
                         backgroundColor: '#3498db',
                         borderColor: '#2980b9',
                         borderWidth: 1
                     }, {
                         label: 'Meta',
-                        data: [5, 8, 70, 85],
+                        data: [5, 8, 70, 85, 90],
                         backgroundColor: '#95a5a6',
                         borderColor: '#7f8c8d',
                         borderWidth: 1
@@ -549,11 +618,21 @@ class QADashboardNova {
 
         // Atualizar dados dos gráficos com as métricas calculadas
         if (this.charts.metas) {
+            const aceitacaoHistorias = this.metricas.aceitacaoHistorias || 0;
             this.charts.metas.data.datasets[0].data = [
                 this.metricas.taxaEscape,
                 this.metricas.mttr,
                 this.metricas.taxaAutomacao,
-                this.metricas.taxaAcerto
+                this.metricas.taxaAcerto,
+                aceitacaoHistorias
+            ];
+            // Atualizar também as metas (incluindo a meta de aceitação que é 90%)
+            this.charts.metas.data.datasets[1].data = [
+                5,  // Taxa Escape meta
+                8,  // MTTR meta
+                70, // Automação meta
+                85, // Acerto meta
+                90  // Aceitação meta
             ];
             this.charts.metas.update();
         }
@@ -678,7 +757,7 @@ class QADashboardNova {
             // Título da página
             doc.setFontSize(18);
             doc.setFont('helvetica', 'bold');
-            doc.text('Métricas Principais', 20, 25);
+            doc.text('Métricas', 20, 25);
             
             // Card Taxa de Escape
             this.drawMetricCardPDF(doc, 20, 35, 'Taxa de Escape', `${this.metricas.taxaEscape}%`, 'Meta: < 5%', 
@@ -695,16 +774,31 @@ class QADashboardNova {
             // Card Acerto
             this.drawMetricCardPDF(doc, 105, 75, 'Taxa de Acerto', `${this.metricas.taxaAcerto}%`, 'Meta: > 85%', 
                 this.metricas.taxaAcerto >= 85 ? [39, 174, 96] : [231, 76, 60]);
+            
+            // Card Aceitação de História de Usuário
+            const aceitacaoHistoriasCard = this.metricas.aceitacaoHistorias || 0;
+            const statusAceitacaoCard = this.metricas.statusAceitacaoHistorias || 'BOM';
+            let aceitacaoColor = [39, 174, 96]; // Verde padrão
+            if (statusAceitacaoCard === 'EXCELENTE') {
+                aceitacaoColor = [39, 174, 96]; // Verde
+            } else if (statusAceitacaoCard === 'BOM') {
+                aceitacaoColor = [52, 144, 219]; // Azul
+            } else if (statusAceitacaoCard === 'ATENCAO') {
+                aceitacaoColor = [243, 156, 18]; // Amarelo
+            } else {
+                aceitacaoColor = [231, 76, 60]; // Vermelho
+            }
+            this.drawMetricCardPDF(doc, 20, 115, 'Aceitação de História de Usuário', `${aceitacaoHistoriasCard.toFixed(1)}%`, `Meta: ≥ 90% (${statusAceitacaoCard})`, aceitacaoColor);
 
             // Defects vs Bugs
             doc.setFontSize(16);
             doc.setFont('helvetica', 'bold');
-            doc.text('Defects vs Bugs', 20, 120);
+            doc.text('Defeitos vs Bugs', 20, 175);
 
-            this.drawMetricCardPDF(doc, 20, 130, 'Defects Abertos', this.metricas.defectsAbertos.toString(), 'Desenvolvimento', [243, 156, 18]);
-            this.drawMetricCardPDF(doc, 105, 130, 'Defects Fechados', this.metricas.defectsFechados.toString(), 'Desenvolvimento', [39, 174, 96]);
-            this.drawMetricCardPDF(doc, 20, 170, 'Bugs Abertos', this.metricas.bugsAbertos.toString(), 'Produção', [231, 76, 60]);
-            this.drawMetricCardPDF(doc, 105, 170, 'Bugs Fechados', this.metricas.bugsFechados.toString(), 'Produção', [39, 174, 96]);
+            this.drawMetricCardPDF(doc, 20, 185, 'Defeitos Abertos', this.metricas.defectsAbertos.toString(), 'Desenvolvimento', [243, 156, 18]);
+            this.drawMetricCardPDF(doc, 105, 185, 'defeitos Fechados', this.metricas.defectsFechados.toString(), 'Desenvolvimento', [39, 174, 96]);
+            this.drawMetricCardPDF(doc, 20, 225, 'Bugs Abertos', this.metricas.bugsAbertos.toString(), 'Produção', [231, 76, 60]);
+            this.drawMetricCardPDF(doc, 105, 225, 'Bugs Fechados', this.metricas.bugsFechados.toString(), 'Produção', [39, 174, 96]);
 
             // === PÁGINA 3: GRÁFICOS ===
             doc.addPage();
@@ -723,53 +817,56 @@ class QADashboardNova {
                     doc.setFontSize(12);
                     doc.setFont('helvetica', 'bold');
                     doc.text('Falhas durante o Ciclo de Desenvolvimento', 20, 35);
-                    // Gráfico maior e centralizado
+                    // Gráfico com largura completa
                     const imgWidth = pageWidth - 40; // Largura total menos margens
-                    const imgHeight = 70;
-                    doc.addImage(imgData, 'PNG', 20, 40, imgWidth, imgHeight);
+                    const imgHeight = 55;
+                    doc.addImage(imgData, 'PNG', 20, 42, imgWidth, imgHeight);
                 }
             } catch (e) {
                 console.log('Erro ao capturar gráfico de Falhas:', e);
             }
 
-            // Gráfico 2 e 3: Comparação com Metas e Defects vs Bugs (Lado a lado)
-            const yStart = 120;
-            const graphWidth = (pageWidth - 50) / 2; // Largura para cada gráfico (com espaço entre eles)
-            const graphHeight = 70;
-
-            // Gráfico de Comparação com Metas (Esquerda)
+            // Gráfico 2: Comparação com Metas (Meio - Largura completa)
+            // Espaçamento maior após o gráfico 1 (termina em ~97, então começa em 125)
+            let yStartMetas = 125;
             try {
                 const canvasMetas = document.getElementById('metasChart');
                 if (canvasMetas) {
                     const imgData = await this.captureChartAsImage(canvasMetas);
                     // Título do gráfico
-                    doc.setFontSize(11);
+                    doc.setFontSize(12);
                     doc.setFont('helvetica', 'bold');
-                    doc.text('Comparação com Metas', 20, yStart);
-                    // Gráfico
-                    doc.addImage(imgData, 'PNG', 20, yStart + 5, graphWidth, graphHeight);
+                    doc.text('Comparação com Metas', 20, yStartMetas);
+                    // Gráfico com largura completa
+                    const imgWidth = pageWidth - 40;
+                    const imgHeight = 55;
+                    doc.addImage(imgData, 'PNG', 20, yStartMetas + 7, imgWidth, imgHeight);
                 }
             } catch (e) {
                 console.log('Erro ao capturar gráfico de Metas:', e);
             }
 
-            // Gráfico Defects vs Bugs (Direita)
+            // Gráfico 3: Defects vs Bugs (Embaixo - Largura completa)
+            // Espaçamento maior após o gráfico 2 (termina em ~187, então começa em 215)
+            let yStartDefects = 215;
             try {
                 const canvasDefectsBugs = document.getElementById('defectsBugsChart');
                 if (canvasDefectsBugs) {
                     const imgData = await this.captureChartAsImage(canvasDefectsBugs);
                     // Título do gráfico
-                    doc.setFontSize(11);
+                    doc.setFontSize(12);
                     doc.setFont('helvetica', 'bold');
-                    doc.text('Defects vs Bugs', 20 + graphWidth + 10, yStart);
-                    // Gráfico
-                    doc.addImage(imgData, 'PNG', 20 + graphWidth + 10, yStart + 5, graphWidth, graphHeight);
+                    doc.text('Defeitos vs Bugs', 20, yStartDefects);
+                    // Gráfico com largura completa
+                    const imgWidth = pageWidth - 40;
+                    const imgHeight = 55;
+                    doc.addImage(imgData, 'PNG', 20, yStartDefects + 7, imgWidth, imgHeight);
                 }
             } catch (e) {
-                console.log('Erro ao capturar gráfico Defects vs Bugs:', e);
+                console.log('Erro ao capturar gráfico Defeitos vs Bugs:', e);
             }
 
-            // === PÁGINA 4: ANÁLISE EXECUTIVA ===
+            // === PÁGINA 5: ANÁLISE EXECUTIVA ===
             doc.addPage();
             
             doc.setFontSize(18);

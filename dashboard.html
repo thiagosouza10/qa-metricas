@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Argo - Métricas QA</title>
+    <title>ARGO - Métricas QA</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="images/argo-logo.png">
@@ -340,6 +340,18 @@
                         <input type="number" id="mttr" class="form-control" placeholder="Ex: 6.2" step="0.1" min="0">
                         <small class="form-text text-muted">Meta: < 8h</small>
                     </div>
+                    
+                    <div class="input-group-custom">
+                        <label for="historias-totais">Histórias de Usuário Totais</label>
+                        <input type="number" id="historias-totais" class="form-control" placeholder="Ex: 10" min="0">
+                        <small class="form-text text-muted">Total de histórias no período</small>
+                    </div>
+                    
+                    <div class="input-group-custom">
+                        <label for="historias-aceitas">Histórias de Usuário Aceitas</label>
+                        <input type="number" id="historias-aceitas" class="form-control" placeholder="Ex: 9" min="0">
+                        <small class="form-text text-muted">Histórias aceitas pelo PO</small>
+                    </div>
                 </div>
                 
                 <!-- Métricas de Eficiência (Métrica 4, 5 e 6) -->
@@ -359,13 +371,13 @@
                     </div>
                     
                     <div class="input-group-custom">
-                        <label for="defects-abertos">Defects Abertos (Desenvolvimento)</label>
-                        <input type="number" id="defects-abertos" class="form-control" placeholder="Ex: 8" min="0">
+                        <label for="defeitos-abertos">Defeitos Abertos (Desenvolvimento)</label>
+                        <input type="number" id="defeitos-abertos" class="form-control" placeholder="Ex: 8" min="0">
                     </div>
                     
                     <div class="input-group-custom">
-                        <label for="defects-fechados">Defects Fechados (Desenvolvimento)</label>
-                        <input type="number" id="defects-fechados" class="form-control" placeholder="Ex: 15" min="0">
+                        <label for="defeitos-fechados">Defeitos Fechados (Desenvolvimento)</label>
+                        <input type="number" id="defeitos-fechados" class="form-control" placeholder="Ex: 15" min="0">
                     </div>
                     
                     <div class="input-group-custom">
@@ -553,6 +565,28 @@
                             <small><strong>Meta:</strong> Menor que 8h - Indica eficiência na correção</small>
                         </div>
                     </div>
+
+                    <div class="help-item mb-4">
+                        <h6 class="text-dark"><i class="bi bi-check2-square"></i> Aceitação de História de Usuário (%)</h6>
+                        <p class="text-muted mb-2">
+                            <strong>O que é:</strong> Percentual de histórias de usuário que foram aceitas pelo Product Owner, indicando que a entrega atende todos os critérios de aceitação definidos no DOD (Definition of Done) e está apta para produção.
+                        </p>
+                        <p class="text-muted mb-2">
+                            <strong>Como calcular:</strong> (Histórias Aceitas ÷ Total de Histórias) × 100
+                        </p>
+                        <p class="text-muted mb-2">
+                            <strong>Exemplo:</strong> 10 histórias de usuário em uma sprint, sendo 9 aceitas pelo PO: 9 ÷ 10 × 100 = 90%
+                        </p>
+                        <div class="alert alert-info py-2">
+                            <small><strong>Classificação:</strong></small>
+                            <ul class="mb-0 mt-2">
+                                <li><strong>Excelente (90-100%):</strong> Times maduros, bom refinamento, critérios claros, QA e Dev bem alinhados</li>
+                                <li><strong>Saudável/Bom (80-89%):</strong> Ainda existem algumas estórias com problemas, mas o processo funciona bem</li>
+                                <li><strong>Atenção (70-79%):</strong> Sinais de falta de clareza, retrabalho aumentou, refinamento inconsistente</li>
+                                <li><strong>Crítico (&lt;70%):</strong> Muitas estórias retornando, critérios ruins, fluxo desorganizado, QA/Dev desalinhados</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Métricas de Eficiência -->
@@ -592,18 +626,18 @@
                     </div>
 
                     <div class="help-item mb-4">
-                        <h6 class="text-dark"><i class="bi bi-exclamation-triangle"></i> Defects vs Bugs</h6>
+                        <h6 class="text-dark"><i class="bi bi-exclamation-triangle"></i> Defeitos vs Bugs</h6>
                         <p class="text-muted mb-2">
-                            <strong>Defects (Desenvolvimento):</strong> Problemas encontrados durante testes no ambiente de desenvolvimento.
+                            <strong>defeitos (Desenvolvimento):</strong> Problemas encontrados durante testes no ambiente de desenvolvimento.
                         </p>
                         <p class="text-muted mb-2">
                             <strong>Bugs (Produção):</strong> Problemas encontrados em ambiente de produção pelos usuários.
                         </p>
                         <p class="text-muted mb-2">
-                            <strong>Diferença:</strong> Defects são corrigidos antes do deploy, Bugs chegam aos usuários.
+                            <strong>Diferença:</strong> defeitos são corrigidos antes do deploy, Bugs chegam aos usuários.
                         </p>
                         <div class="alert alert-warning py-2">
-                            <small><strong>Objetivo:</strong> Maximizar Defects (desenvolvimento) e minimizar Bugs (produção)</small>
+                            <small><strong>Objetivo:</strong> Maximizar defeitos (desenvolvimento) e minimizar Bugs (produção)</small>
                         </div>
                     </div>
                 </div>
@@ -735,6 +769,23 @@
                     </div>
                 </div>
 
+                <!-- Aceitação de História de Usuário -->
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card metric-card">
+                        <div class="card-body">
+                            <div id="aceitacao-historias-valor" class="metric-value status-bom">90%</div>
+                            <div class="metric-label">Aceitação de História de Usuário</div>
+                            <div class="progress progress-custom">
+                                <div id="aceitacao-historias-progress" class="progress-bar bg-success" role="progressbar" style="width: 90%"></div>
+                            </div>
+                            <small class="text-muted">Meta: >= 90%</small>
+                            <div id="aceitacao-historias-status" class="mt-2">
+                                <span class="badge badge-status bg-success">EXCELENTE</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Taxa de Automação -->
                 <div class="col-lg-3 col-md-6 mb-3">
                     <div class="card metric-card">
@@ -770,21 +821,21 @@
                     <div class="card">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">
-                                <i class="bi bi-bug text-warning"></i> Defects (Desenvolvimento)
+                                <i class="bi bi-bug text-warning"></i> Defeitos (Desenvolvimento)
                             </h5>
                         </div>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-6">
                                     <div class="text-center">
-                                        <div id="defects-fechados-valor" class="h4 mb-1 text-success">15</div>
-                                        <small class="text-muted">Fechados</small>
+                                        <div id="defects-abertos-valor" class="h4 mb-1 text-warning">8</div>
+                                        <small class="text-muted">Abertos</small>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="text-center">
-                                        <div id="defects-abertos-valor" class="h4 mb-1 text-warning">8</div>
-                                        <small class="text-muted">Abertos</small>
+                                        <div id="defects-fechados-valor" class="h4 mb-1 text-success">15</div>
+                                        <small class="text-muted">Fechados</small>
                                     </div>
                                 </div>
                             </div>
@@ -803,14 +854,14 @@
                             <div class="row">
                                 <div class="col-6">
                                     <div class="text-center">
-                                        <div id="bugs-fechados-valor" class="h4 mb-1 text-success">3</div>
-                                        <small class="text-muted">Fechados</small>
+                                        <div id="bugs-abertos-valor" class="h4 mb-1 text-danger">2</div>
+                                        <small class="text-muted">Abertos</small>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="text-center">
-                                        <div id="bugs-abertos-valor" class="h4 mb-1 text-danger">2</div>
-                                        <small class="text-muted">Abertos</small>
+                                        <div id="bugs-fechados-valor" class="h4 mb-1 text-success">3</div>
+                                        <small class="text-muted">Fechados</small>
                                     </div>
                                 </div>
                             </div>
@@ -825,7 +876,7 @@
                     <div class="card">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">
-                                <i class="bi bi-pie-chart"></i> Defects vs Bugs
+                                <i class="bi bi-pie-chart"></i> Defeitos vs Bugs
                             </h5>
                         </div>
                         <div class="card-body">
@@ -920,10 +971,6 @@
                             <div class="d-grid gap-2">
                                 <button id="gerar-pdf" class="btn btn-danger btn-custom">
                                     <i class="bi bi-file-earmark-pdf"></i> Gerar PDF
-                                </button>
-                                
-                                <button id="exportar-dados" class="btn btn-success btn-custom">
-                                    <i class="bi bi-download"></i> Exportar JSON
                                 </button>
                             </div>
                             
