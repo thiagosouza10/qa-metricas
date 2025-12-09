@@ -714,15 +714,16 @@ class QADashboardNova {
                 const dashboardElement = document.getElementById('dashboard');
                 const margin = 15;
                 const availableWidth = pageWidth - (margin * 2);
-                let currentY = 45;
+                let currentY = 40; // Reduzido para aproveitar melhor o espaço
                 let pageNumber = 1;
-                const headerHeight = 45;
+                const headerHeight = 40;
                 const footerHeight = 20;
                 
                 // Capturar dashboard completo uma única vez
+                // Escala menor para que mais conteúdo caiba na primeira página
                 const canvas = await html2canvas(dashboardElement, {
                     backgroundColor: '#ffffff',
-                    scale: 1.2,
+                    scale: 1.0, // Escala reduzida para melhor ajuste
                     useCORS: true,
                     logging: false,
                     allowTaint: true
@@ -732,8 +733,8 @@ class QADashboardNova {
                 const imgWidth = availableWidth;
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
                 
-                // Altura disponível na primeira página (com cabeçalho)
-                const firstPageAvailableHeight = pageHeight - currentY - footerHeight;
+                // Altura disponível na primeira página (com cabeçalho) - aumentar para manter métricas juntas
+                const firstPageAvailableHeight = pageHeight - currentY - footerHeight + 20;
                 
                 // Altura disponível nas páginas seguintes (sem cabeçalho)
                 const nextPageAvailableHeight = pageHeight - 10 - footerHeight;
