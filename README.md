@@ -5,11 +5,10 @@
 Solução **HTML5 + CSS3 + Bootstrap 5 + JavaScript** para métricas essenciais de QA, com foco em **rastreamento detalhado de falhas durante o ciclo completo de desenvolvimento** e apresentações profissionais para reviews.
 
 ### 🌐 **Acesso Online**
-- **GitHub Pages**: [https://bella5900g.github.io/qa-metrics-dashboard/dashboard.html](https://bella5900g.github.io/qa-metrics-dashboard/dashboard.html)
-- **Repositório**: [https://github.com/Bella5900g/qa-metrics-dashboard](https://github.com/Bella5900g/qa-metrics-dashboard)
+- **GitHub Pages**: [https://thiagosouza10.github.io/qa-metricas/dashboard.html]
 
 ### 🎯 **Objetivo Principal**
-Esta versão do dashboard foi criada para **facilitar a vida do QA** na coleta, análise e apresentação de métricas essenciais durante **cerimônias de review** e **reuniões com stakeholders**. O foco é fornecer uma ferramenta **simples, rápida e profissional** que permita ao QA apresentar dados de qualidade de forma visual e impactante, com **rastreamento detalhado de falhas em cada fase do ciclo de desenvolvimento**.
+Esta versão do dashboard foi criada para **facilitar a vida do QA** na coleta, análise e apresentação de métricas essenciais durante **cerimônias de retorpectiva** e **reuniões com stakeholders**. O foco é fornecer uma ferramenta **simples, rápida e profissional** que permita ao QA apresentar dados de qualidade de forma visual e impactante, com **rastreamento detalhado de falhas em cada fase do ciclo de desenvolvimento**.
 
 ## ✨ Características Principais
 
@@ -60,22 +59,10 @@ Esta versão do dashboard foi criada para **facilitar a vida do QA** na coleta, 
 
 ## 🚀 Como Usar o Dashboard
 
-### 🌐 **Opção 1: Acesso Online (Recomendado)**
-1. **Acesse**: [https://bella5900g.github.io/qa-metrics-dashboard/dashboard.html](https://bella5900g.github.io/qa-metrics-dashboard/dashboard.html)
+### 🌐 **Acesso Online (Recomendado)**
+1. **Acesse**: [https://thiagosouza10.github.io/qa-metricas/dashboard.html]
 2. **Não precisa instalar nada** - Funciona direto no navegador
-3. **Sempre atualizado** - Última versão disponível
 
-### 💻 **Opção 2: Uso Local**
-```bash
-# Clone o repositório
-git clone https://github.com/Bella5900g/qa-metrics-dashboard.git
-cd qa-metrics-dashboard
-
-# Simplesmente abra o arquivo dashboard.html no navegador
-open dashboard.html
-# ou
-# Clique duplo no arquivo dashboard.html
-```
 
 ### 📋 **Passo a Passo Detalhado**
 
@@ -160,51 +147,6 @@ qa-metrics-dashboard/
 └── README.md         # Este arquivo
 ```
 
-## 🌐 Hospedagem e Deploy
-
-### **GitHub Pages**
-- **URL**: [https://bella5900g.github.io/qa-metrics-dashboard/dashboard.html](https://bella5900g.github.io/qa-metrics-dashboard/dashboard.html)
-
-### **Estrutura para Deploy**
-```
-qa-metrics-dashboard/
-├── dashboard.html    # Página principal
-├── js/
-│   └── dashboard.js  # Lógica JavaScript
-├── images/
-│   └── argo-logo.png      # Logo Argo
-└── README.md         # Documentação
-```
-
-## 🎯 Para Quem Foi Criado
-
-### **👨‍💼 Líderes de QA**
-- **Apresentações** em reviews e retrospectivas
-- **Relatórios** executivos para stakeholders
-- **Métricas** essenciais em formato visual
-- **Análise** rápida do status da qualidade
-- **Rastreamento** de falhas por fase do ciclo
-
-### **🧪 Analistas de QA**
-- **Coleta** fácil de métricas do período
-- **Cálculo** automático de indicadores
-- **Visualização** clara dos resultados
-- **Exportação** para análises detalhadas
-- **Identificação** de fases críticas do ciclo
-
-### **👥 Times de Desenvolvimento**
-- **Transparência** total das métricas de qualidade
-- **Foco** nas metas importantes
-- **Melhoria** contínua baseada em dados
-- **Comunicação** eficaz sobre qualidade
-- **Entendimento** de onde as falhas são detectadas
-
-### **🏢 Stakeholders e Gestores**
-- **Relatórios** profissionais para apresentações
-- **Status** visual claro e objetivo
-- **Métricas** padronizadas e comparáveis
-- **Dados** estruturados para tomada de decisão
-- **Visibilidade** do ciclo completo de desenvolvimento
 
 ## 📊 Métricas Implementadas
 
@@ -248,110 +190,6 @@ Esta métrica rastreia todos os tipos de falhas identificadas durante o ciclo co
 - **Pontos Positivos** - Análise automática dos pontos fortes
 - **Pontos de Atenção** - Análise automática dos pontos de melhoria
 
-## 🎨 Interface Destacada
-
-### **Design Responsivo**
-- **Desktop** - Layout completo com gráficos
-- **Tablet** - Adaptação inteligente
-- **Mobile** - Interface otimizada para touch
-
-### **Elementos Visuais**
-- **Cards com Sombras** - Profundidade visual
-- **Progress Bars** - Indicadores de progresso
-- **Badges Coloridos** - Status instantâneo
-- **Gráficos Interativos** - Exploração de dados
-- **Avisos Inteligentes** - Alertas contextuais
-
-### **Cores Intuitivas**
-- 🟢 **Verde** - Excelente/Bom
-- 🟡 **Amarelo** - Atenção
-- 🔴 **Vermelho** - Crítico
-- 🔵 **Azul** - Informativo
-
-### **Branding Argo**
-- Logo personalizado na navbar
-- Identidade visual consistente
-- Interface profissional
-
-## 💡 Vantagens da Solução
-
-### **Para o QA**
-- ✅ **Zero curva de aprendizado**
-- ✅ **Interface familiar** (formulários web)
-- ✅ **Resultados instantâneos**
-- ✅ **Relatórios profissionais**
-- ✅ **Rastreamento detalhado** de falhas por fase
-
-### **Para a Liderança**
-- ✅ **Métricas essenciais** em destaque
-- ✅ **Status visual** claro
-- ✅ **Relatórios exportáveis** para apresentações
-- ✅ **Dados estruturados** para análise
-- ✅ **Visibilidade** do ciclo completo de desenvolvimento
-
-### **Para o Time**
-- ✅ **Transparência** total das métricas
-- ✅ **Foco nas metas** importantes
-- ✅ **Melhoria contínua** baseada em dados
-- ✅ **Comunicação eficaz** em reviews
-- ✅ **Identificação** de fases críticas do ciclo
-
-## 🔧 Tecnologias Utilizadas
-
-- **HTML5** - Estrutura semântica
-- **CSS3** - Estilos modernos e responsivos
-- **Bootstrap 5** - Framework CSS responsivo
-- **JavaScript ES6+** - Lógica interativa
-- **Chart.js** - Gráficos interativos
-- **jsPDF** - Geração de PDFs
-- **html2canvas** - Captura de gráficos para PDF
-- **Bootstrap Icons** - Ícones modernos
-
-## 🆕 Diferenças da Versão Original
-
-### **Principais Melhorias:**
-1. **Métrica de Falhas por Fase** - Rastreamento detalhado de falhas durante todo o ciclo
-2. **Avisos Inteligentes** - Alertas automáticos sobre falhas críticas
-3. **Branding Argo** - Identidade visual personalizada
-4. **Interface Aprimorada** - Design mais moderno e intuitivo
-5. **Guia de Uso Detalhado** - Seção completa explicando cada campo
-6. **Gráficos Melhorados** - Visualizações mais informativas
-
-### **Métricas Adicionais:**
-- **Falhas durante o Ciclo de Desenvolvimento** (6 tipos diferentes)
-- **Total de Falhas** (calculado automaticamente)
-- **Análise de Fase** (identificação de onde as falhas são detectadas)
-
-## 🎉 Resultado Final
-
-Uma solução **simples, elegante e funcional** que permite ao QA:
-
-1. **Inserir métricas** facilmente através de interface intuitiva
-2. **Rastrear falhas** por fase do ciclo de desenvolvimento
-3. **Visualizar resultados** instantaneamente com gráficos interativos  
-4. **Gerar relatórios** profissionais em PDF
-5. **Apresentar dados** em reviews com status visual claro
-6. **Exportar informações** em JSON para integração com outros sistemas
-7. **Acessar online** sem necessidade de instalação ou configuração
-
-### 🌟 **Principais Benefícios**
-- ✅ **Zero curva de aprendizado** - Interface familiar e intuitiva
-- ✅ **Acesso imediato** - Funciona direto no navegador
-- ✅ **Relatórios profissionais** - PDF pronto para apresentações
-- ✅ **Métricas essenciais** - Foco no que realmente importa
-- ✅ **Gráficos visuais** - Dados apresentados de forma impactante
-- ✅ **Análise automática** - Pontos positivos e de atenção identificados
-- ✅ **Rastreamento detalhado** - Falhas por fase do ciclo
-- ✅ **Hospedagem gratuita** - GitHub Pages com HTTPS automático
-
-### 🚀 **Pronto para Uso**
-**Perfeito para o dia a dia do QA e apresentações de liderança!**
-
-- **Acesse agora**: [https://bella5900g.github.io/qa-metrics-dashboard/dashboard.html](https://bella5900g.github.io/qa-metrics-dashboard/dashboard.html)
-- **Contribua**: [https://github.com/Bella5900g/qa-metrics-dashboard](https://github.com/Bella5900g/qa-metrics-dashboard)
-
----
-
 ## 📝 Notas Importantes
 
 ### **Classificação de Falhas**
@@ -367,8 +205,3 @@ Uma solução **simples, elegante e funcional** que permite ao QA:
 ### **Foco em Produção**
 - Priorize reduzir falhas em produção - este é o indicador mais crítico
 - Quanto mais cedo as falhas forem detectadas, menor o impacto
-
----
-
-**Desenvolvido com ❤️ para facilitar a vida do QA e melhorar a qualidade dos produtos!**
-
