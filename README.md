@@ -74,7 +74,37 @@ Métricas essenciais que impactam diretamente a qualidade do produto:
     - ATENÇÃO: 70% a 79% - Sinais de falta de clareza, retrabalho aumentou, refinamento inconsistente
     - CRÍTICO: < 70% - Muitas estórias retornando, critérios ruins, fluxo desorganizado, QA/Dev desalinhados
 
-#### ⚡ **3. Métricas de Eficiência**
+#### 🔴 **Falhas Por Prioridade**
+
+Esta métrica rastreia a distribuição de falhas identificadas durante o ciclo de desenvolvimento, classificadas por nível de prioridade.
+
+**Prioridades:**
+- **Trivial**: Falhas com impacto mínimo, não afetam funcionalidades críticas
+- **Média**: Falhas com impacto moderado, afetam funcionalidades secundárias
+- **Gravíssima**: Falhas com alto impacto, afetam funcionalidades importantes
+- **Crítica**: Falhas que impedem o uso de funcionalidades essenciais ou causam perda de dados
+
+**Objetivo:**
+- Identificar a distribuição de falhas por prioridade
+- Priorizar esforços de correção
+- Entender o impacto das falhas encontradas
+
+#### 🐛 **Bugs Por Prioridade**
+
+Esta métrica rastreia a distribuição de bugs encontrados em produção, classificados por nível de prioridade.
+
+**Prioridades:**
+- **Trivial**: Bugs com impacto mínimo, não afetam funcionalidades críticas
+- **Média**: Bugs com impacto moderado, afetam funcionalidades secundárias
+- **Gravíssima**: Bugs com alto impacto, afetam funcionalidades importantes
+- **Crítica**: Bugs que impedem o uso de funcionalidades essenciais ou causam perda de dados
+
+**Objetivo:**
+- Identificar a distribuição de bugs por prioridade em produção
+- Priorizar esforços de correção
+- Entender o impacto dos bugs reportados pelos usuários
+
+#### ⚡ **4. Métricas de Eficiência**
 
 Métricas que indicam a eficiência dos processos de teste:
 
@@ -152,6 +182,18 @@ Métricas que indicam a eficiência dos processos de teste:
 - **MTTR**: Tempo médio para resolução de bugs (em horas)
 - **Histórias de Usuário Totais**: Total de histórias de usuário no período
 - **Histórias de Usuário Aceitas**: Histórias aceitas pelo PO (atendem todos os critérios de aceitação do DOD)
+
+##### **🔴 Falhas Por Prioridade**
+- **Falhas - Trivial**: Quantidade de falhas com prioridade trivial
+- **Falhas - Média**: Quantidade de falhas com prioridade média
+- **Falhas - Gravíssima**: Quantidade de falhas com prioridade gravíssima
+- **Falhas - Crítica**: Quantidade de falhas com prioridade crítica
+
+##### **🐛 Bugs Por Prioridade**
+- **Bugs - Trivial**: Quantidade de bugs com prioridade trivial
+- **Bugs - Média**: Quantidade de bugs com prioridade média
+- **Bugs - Gravíssima**: Quantidade de bugs com prioridade gravíssima
+- **Bugs - Crítica**: Quantidade de bugs com prioridade crítica
 
 ##### **⚡ Métricas de Eficiência**
 - **Taxa de Automação**: Percentual de testes automatizados

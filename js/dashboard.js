@@ -77,6 +77,18 @@ class QADashboardNova {
             bugsAbertos: parseInt(document.getElementById('bugs-abertos').value) || 0,
             bugsFechados: parseInt(document.getElementById('bugs-fechados').value) || 0,
             
+            // Falhas Por Prioridade
+            falhaPrioridadeTrivial: parseInt(document.getElementById('falha-prioridade-trivial').value) || 0,
+            falhaPrioridadeMedia: parseInt(document.getElementById('falha-prioridade-media').value) || 0,
+            falhaPrioridadeGravissima: parseInt(document.getElementById('falha-prioridade-gravissima').value) || 0,
+            falhaPrioridadeCritica: parseInt(document.getElementById('falha-prioridade-critica').value) || 0,
+            
+            // Bugs Por Prioridade
+            bugPrioridadeTrivial: parseInt(document.getElementById('bug-prioridade-trivial').value) || 0,
+            bugPrioridadeMedia: parseInt(document.getElementById('bug-prioridade-media').value) || 0,
+            bugPrioridadeGravissima: parseInt(document.getElementById('bug-prioridade-gravissima').value) || 0,
+            bugPrioridadeCritica: parseInt(document.getElementById('bug-prioridade-critica').value) || 0,
+            
             // Informações adicionais
             equipeResponsavel: document.getElementById('equipe-responsavel').value || 'Time QA',
             periodoAnalise: document.getElementById('periodo-analise').value || 'Últimos 30 dias',
@@ -293,6 +305,18 @@ class QADashboardNova {
         document.getElementById('defects-abertos-valor').textContent = this.metricas.defectsAbertos;
         document.getElementById('bugs-fechados-valor').textContent = this.metricas.bugsFechados;
         document.getElementById('bugs-abertos-valor').textContent = this.metricas.bugsAbertos;
+
+        // Falhas Por Prioridade
+        document.getElementById('falha-prioridade-trivial-valor').textContent = this.metricas.falhaPrioridadeTrivial;
+        document.getElementById('falha-prioridade-media-valor').textContent = this.metricas.falhaPrioridadeMedia;
+        document.getElementById('falha-prioridade-gravissima-valor').textContent = this.metricas.falhaPrioridadeGravissima;
+        document.getElementById('falha-prioridade-critica-valor').textContent = this.metricas.falhaPrioridadeCritica;
+
+        // Bugs Por Prioridade
+        document.getElementById('bug-prioridade-trivial-valor').textContent = this.metricas.bugPrioridadeTrivial;
+        document.getElementById('bug-prioridade-media-valor').textContent = this.metricas.bugPrioridadeMedia;
+        document.getElementById('bug-prioridade-gravissima-valor').textContent = this.metricas.bugPrioridadeGravissima;
+        document.getElementById('bug-prioridade-critica-valor').textContent = this.metricas.bugPrioridadeCritica;
 
         // Atualizar status geral
         const statusElement = document.getElementById('status-geral');
@@ -592,6 +616,146 @@ class QADashboardNova {
                 }
             });
         }
+
+        // Plugin customizado para mostrar total no centro - Falhas
+        const centerTextPluginFalhas = {
+            id: 'centerTextFalhas',
+            beforeDraw: (chart) => {
+                const ctx = chart.ctx;
+                const centerX = chart.chartArea.left + (chart.chartArea.right - chart.chartArea.left) / 2;
+                const centerY = chart.chartArea.top + (chart.chartArea.bottom - chart.chartArea.top) / 2;
+                
+                const data = chart.data.datasets[0].data;
+                const total = data.reduce((a, b) => a + b, 0);
+                
+                ctx.save();
+                ctx.font = 'bold 24px Arial';
+                ctx.fillStyle = '#2c3e50';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('Total', centerX, centerY - 10);
+                
+                ctx.font = 'bold 32px Arial';
+                ctx.fillStyle = '#3498db';
+                ctx.fillText(total.toString(), centerX, centerY + 20);
+                ctx.restore();
+            }
+        };
+
+        // Gráfico de Falhas Por Prioridade
+        const ctxFalhasPrioridade = document.getElementById('falhasPrioridadeChart');
+        if (ctxFalhasPrioridade) {
+            this.charts.falhasPrioridade = new Chart(ctxFalhasPrioridade, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Trivial', 'Média', 'Gravíssima', 'Crítica'],
+                    datasets: [{
+                        data: [0, 0, 0, 0],
+                        backgroundColor: [
+                            '#95a5a6',  // Trivial - Cinza
+                            '#3498db',  // Média - Azul
+                            '#f39c12',  // Gravíssima - Laranja
+                            '#e74c3c'   // Crítica - Vermelho
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Distribuição de Falhas por Prioridade'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : 0;
+                                    return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                                }
+                            }
+                        }
+                    }
+                },
+                plugins: [centerTextPluginFalhas]
+            });
+        }
+
+        // Plugin customizado para mostrar total no centro - Bugs
+        const centerTextPluginBugs = {
+            id: 'centerTextBugs',
+            beforeDraw: (chart) => {
+                const ctx = chart.ctx;
+                const centerX = chart.chartArea.left + (chart.chartArea.right - chart.chartArea.left) / 2;
+                const centerY = chart.chartArea.top + (chart.chartArea.bottom - chart.chartArea.top) / 2;
+                
+                const data = chart.data.datasets[0].data;
+                const total = data.reduce((a, b) => a + b, 0);
+                
+                ctx.save();
+                ctx.font = 'bold 24px Arial';
+                ctx.fillStyle = '#2c3e50';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('Total', centerX, centerY - 10);
+                
+                ctx.font = 'bold 32px Arial';
+                ctx.fillStyle = '#e74c3c';
+                ctx.fillText(total.toString(), centerX, centerY + 20);
+                ctx.restore();
+            }
+        };
+
+        // Gráfico de Bugs Por Prioridade
+        const ctxBugsPrioridade = document.getElementById('bugsPrioridadeChart');
+        if (ctxBugsPrioridade) {
+            this.charts.bugsPrioridade = new Chart(ctxBugsPrioridade, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Trivial', 'Média', 'Gravíssima', 'Crítica'],
+                    datasets: [{
+                        data: [0, 0, 0, 0],
+                        backgroundColor: [
+                            '#95a5a6',  // Trivial - Cinza
+                            '#3498db',  // Média - Azul
+                            '#f39c12',  // Gravíssima - Laranja
+                            '#e74c3c'   // Crítica - Vermelho
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Distribuição de Bugs por Prioridade'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : 0;
+                                    return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                                }
+                            }
+                        }
+                    }
+                },
+                plugins: [centerTextPluginBugs]
+            });
+        }
     }
 
     atualizarGraficos() {
@@ -635,6 +799,28 @@ class QADashboardNova {
                 90  // Aceitação meta
             ];
             this.charts.metas.update();
+        }
+
+        // Atualizar gráfico de Falhas Por Prioridade
+        if (this.charts.falhasPrioridade) {
+            this.charts.falhasPrioridade.data.datasets[0].data = [
+                this.metricas.falhaPrioridadeTrivial,
+                this.metricas.falhaPrioridadeMedia,
+                this.metricas.falhaPrioridadeGravissima,
+                this.metricas.falhaPrioridadeCritica
+            ];
+            this.charts.falhasPrioridade.update();
+        }
+
+        // Atualizar gráfico de Bugs Por Prioridade
+        if (this.charts.bugsPrioridade) {
+            this.charts.bugsPrioridade.data.datasets[0].data = [
+                this.metricas.bugPrioridadeTrivial,
+                this.metricas.bugPrioridadeMedia,
+                this.metricas.bugPrioridadeGravissima,
+                this.metricas.bugPrioridadeCritica
+            ];
+            this.charts.bugsPrioridade.update();
         }
     }
 
@@ -716,7 +902,6 @@ class QADashboardNova {
                 const availableWidth = pageWidth - (margin * 2);
                 let pageNumber = 1;
                 const footerHeight = 20;
-                const totalPages = 3; // 3 páginas conforme reorganização
                 
                 // Função auxiliar para coletar elementos de um tópico
                 const collectTopicElements = (topicTitleText) => {
@@ -731,7 +916,7 @@ class QADashboardNova {
                         );
                         for (let row of allRows) {
                             const cardTitle = row.querySelector('h5.card-title');
-                            if (cardTitle && cardTitle.textContent.includes('Resumo de Análise')) {
+                            if (cardTitle && cardTitle.textContent.trim() === 'Resumo de Análise') {
                                 topicTitleRow = row;
                                 allContent = [row];
                                 break;
@@ -760,6 +945,12 @@ class QADashboardNova {
                                     const nextTitle = nextRow.querySelector('h4.text-primary');
                                     if (nextTitle) break; // Encontrou próximo tópico, parar
                                     
+                                    // Verificar se é o Resumo de Análise (tem h5.card-title com "Resumo de Análise")
+                                    const cardTitle = nextRow.querySelector('h5.card-title');
+                                    if (cardTitle && cardTitle.textContent.includes('Resumo de Análise')) {
+                                        break; // Encontrou Resumo de Análise, parar para não incluí-lo
+                                    }
+                                    
                                     // Adicionar esta row ao conteúdo (mesmo que não tenha mb-4)
                                     allContent.push(nextRow);
                                 }
@@ -771,9 +962,24 @@ class QADashboardNova {
                     return allContent;
                 };
                 
+                // Calcular total de páginas dinamicamente (após definir collectTopicElements)
+                let totalPages = 3; // Base: Falhas, Métricas Críticas, Métricas Eficiência + Comparação
+                // Verificar se há Resumo de Análise
+                const resumoCheck = collectTopicElements('Resumo de Análise');
+                if (resumoCheck && resumoCheck.length > 0) {
+                    totalPages++; // Adicionar página do Resumo de Análise
+                }
+                // Verificar se há observações
+                if (this.metricas.observacoes && this.metricas.observacoes.trim()) {
+                    totalPages++; // Adicionar página de Observações
+                }
+                
                 // Função auxiliar para adicionar elementos em uma página
                 const addElementsToPage = async (elements) => {
-                    if (elements.length === 0) return false;
+                    if (!elements || elements.length === 0) {
+                        console.warn('Nenhum elemento para adicionar à página');
+                        return false;
+                    }
                     
                     // Criar nova página (exceto para a primeira)
                     if (pageNumber > 1) {
@@ -840,26 +1046,98 @@ class QADashboardNova {
                         }
                     });
                     
-                    // Aguardar para garantir que a ocultação seja aplicada
-                    await new Promise(resolve => setTimeout(resolve, 200));
+                    // Aguardar para garantir que a ocultação seja aplicada e gráficos renderizados
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
+                    // Forçar atualização dos gráficos antes de capturar
+                    try {
+                        if (this.charts.falhasPrioridade) {
+                            this.charts.falhasPrioridade.update('none');
+                        }
+                        if (this.charts.bugsPrioridade) {
+                            this.charts.bugsPrioridade.update('none');
+                        }
+                        // Aguardar renderização
+                        await new Promise(resolve => setTimeout(resolve, 300));
+                    } catch (e) {
+                        console.warn('Erro ao atualizar gráficos:', e);
+                    }
+                    
+                    // Verificar se há elementos visíveis antes de capturar
+                    const visibleRows = allRows.filter(row => {
+                        const style = window.getComputedStyle(row);
+                        return style.display !== 'none' && style.visibility !== 'hidden';
+                    });
+                    
+                    if (visibleRows.length === 0) {
+                        console.error('Nenhum elemento visível para capturar');
+                        // Restaurar visibilidade antes de lançar erro
+                        hiddenElements.forEach(({ element, display }) => {
+                            element.style.display = display || '';
+                        });
+                        throw new Error('Nenhum conteúdo visível encontrado para capturar');
+                    }
+                    
+                    // Verificar se o dashboard tem altura mínima
+                    const dashboardHeight = dashboardElement.offsetHeight || dashboardElement.scrollHeight;
+                    if (dashboardHeight < 50) {
+                        console.warn('Dashboard muito pequeno, pode estar vazio');
+                    }
                     
                     // Capturar o dashboard (apenas elementos visíveis serão capturados)
-                    const canvas = await html2canvas(dashboardElement, {
-                        backgroundColor: '#ffffff',
-                        scale: 1.2,
-                        useCORS: true,
-                        logging: false,
-                        allowTaint: true
-                    });
+                    let canvas;
+                    try {
+                        canvas = await html2canvas(dashboardElement, {
+                            backgroundColor: '#ffffff',
+                            scale: 1.2,
+                            useCORS: true,
+                            logging: false,
+                            allowTaint: true,
+                            timeout: 30000,
+                            imageTimeout: 15000,
+                            width: dashboardElement.scrollWidth || dashboardElement.offsetWidth,
+                            height: dashboardElement.scrollHeight || dashboardElement.offsetHeight
+                        });
+                        
+                        if (!canvas || canvas.width === 0 || canvas.height === 0) {
+                            throw new Error('Canvas capturado está vazio');
+                        }
+                    } catch (canvasError) {
+                        console.error('Erro ao capturar canvas:', canvasError);
+                        // Restaurar visibilidade antes de lançar erro
+                        hiddenElements.forEach(({ element, display }) => {
+                            element.style.display = display || '';
+                        });
+                        throw new Error('Falha ao capturar a imagem do dashboard: ' + (canvasError.message || 'Erro desconhecido'));
+                    }
                     
                     // Restaurar visibilidade de todos os elementos
                     hiddenElements.forEach(({ element, display }) => {
                         element.style.display = display || '';
                     });
                     
+                    // Validar se o canvas tem conteúdo
+                    if (!canvas || canvas.width === 0 || canvas.height === 0) {
+                        console.error('Canvas vazio ou inválido');
+                        throw new Error('Canvas não pôde ser capturado corretamente');
+                    }
+                    
                     const imgData = canvas.toDataURL('image/png', 1.0);
+                    
+                    // Validar se a imagem foi gerada
+                    if (!imgData || imgData === 'data:,') {
+                        console.error('Imagem não foi gerada do canvas');
+                        throw new Error('Falha ao gerar imagem do canvas');
+                    }
+                    
                     const imgWidth = availableWidth;
                     const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                    
+                    // Validar dimensões
+                    if (imgHeight <= 0 || imgWidth <= 0) {
+                        console.error('Dimensões inválidas da imagem:', { imgWidth, imgHeight, canvasWidth: canvas.width, canvasHeight: canvas.height });
+                        throw new Error('Dimensões inválidas da imagem capturada');
+                    }
                     
                     // Calcular posição Y inicial
                     let startY = pageNumber === 1 ? 45 : 10;
@@ -872,7 +1150,12 @@ class QADashboardNova {
                     }
                     
                     // Adicionar imagem na página
-                    doc.addImage(imgData, 'PNG', margin, startY, imgWidth, finalHeight);
+                    try {
+                        doc.addImage(imgData, 'PNG', margin, startY, imgWidth, finalHeight);
+                    } catch (addImageError) {
+                        console.error('Erro ao adicionar imagem ao PDF:', addImageError);
+                        throw new Error('Falha ao adicionar imagem ao PDF: ' + addImageError.message);
+                    }
                     
                     // Adicionar rodapé
                     doc.setFontSize(8);
@@ -887,17 +1170,22 @@ class QADashboardNova {
                 const falhasElements = collectTopicElements('Falhas durante o Ciclo de Desenvolvimento');
                 await addElementsToPage(falhasElements);
                 
-                // Página 2: Métricas Críticas + Métricas de Eficiência (juntos)
+                // Página 2: Métricas Críticas (inclui Falhas Por Prioridade e Bugs Por Prioridade)
                 const metricasCriticasElements = collectTopicElements('Métricas Críticas');
-                const metricasEficienciaElements = collectTopicElements('Métricas de Eficiência');
-                const combinedElements = [...metricasCriticasElements, ...metricasEficienciaElements];
-                await addElementsToPage(combinedElements);
+                await addElementsToPage(metricasCriticasElements);
                 
-                // Página 3: Comparação Métricas VS Metas + Resumo de Análise (juntos)
+                // Página 3: Métricas de Eficiência + Comparação Métricas VS Metas (juntos)
+                const metricasEficienciaElements = collectTopicElements('Métricas de Eficiência');
                 const comparacaoElements = collectTopicElements('Comparação Métricas VS Metas');
+                const combinedElements2 = [...metricasEficienciaElements, ...comparacaoElements];
+                await addElementsToPage(combinedElements2);
+                
+                // Página 4: Resumo de Análise (página exclusiva)
                 const resumoElements = collectTopicElements('Resumo de Análise');
-                const finalElements = [...comparacaoElements, ...resumoElements];
-                await addElementsToPage(finalElements);
+                // Garantir que não está vazio e adicionar em página exclusiva
+                if (resumoElements && resumoElements.length > 0) {
+                    await addElementsToPage(resumoElements);
+                }
                 
                 // Adicionar observações se houver, em nova página
                 if (this.metricas.observacoes && this.metricas.observacoes.trim()) {
@@ -927,10 +1215,35 @@ class QADashboardNova {
                 
             } catch (error) {
                 console.error('Erro ao capturar dashboard:', error);
-                // Fallback: mostrar mensagem de erro
-                doc.setFontSize(12);
-                doc.setTextColor(231, 76, 60);
-                doc.text('Erro ao capturar dashboard. Por favor, tente novamente.', 20, 50);
+                // Fallback: adicionar página com mensagem de erro
+                try {
+                    if (pageNumber === 1) {
+                        doc.setFillColor(52, 144, 219);
+                        doc.rect(0, 0, pageWidth, 35, 'F');
+                        doc.setTextColor(255, 255, 255);
+                        doc.setFontSize(18);
+                        doc.setFont('helvetica', 'bold');
+                        doc.text('ARGO - Métricas QA', 20, 20);
+                        doc.setFontSize(9);
+                        doc.setFont('helvetica', 'normal');
+                        doc.text(`Relatório: ${this.metricas.equipeResponsavel} | ${this.metricas.periodoAnalise} | ${this.metricas.dataGeracao}`, 20, 30);
+                    } else {
+                        doc.addPage();
+                    }
+                    doc.setFontSize(12);
+                    doc.setTextColor(231, 76, 60);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('Erro ao capturar dashboard', 20, 50);
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(0, 0, 0);
+                    doc.text('Ocorreu um erro ao gerar o PDF. Detalhes:', 20, 70);
+                    const errorText = doc.splitTextToSize(error.message || 'Erro desconhecido', pageWidth - 40);
+                    doc.text(errorText, 20, 85);
+                    doc.text('Por favor, tente novamente ou entre em contato com o suporte.', 20, 120);
+                } catch (fallbackError) {
+                    console.error('Erro no fallback:', fallbackError);
+                }
             }
 
             // Gerar nome do arquivo com horário local

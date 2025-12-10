@@ -194,6 +194,16 @@
             box-shadow: 0 0 0 0.2rem rgba(52, 144, 219, 0.25);
         }
         
+        .input-group-custom label.small {
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .input-group-custom .form-control-sm {
+            padding: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
         .hidden {
             display: none !important;
         }
@@ -280,114 +290,191 @@
                 <div class="col-12 mb-4">
                     <h4 class="text-primary mb-3">🔴 Falhas durante o Ciclo de Desenvolvimento</h4>
                     
-                    <div class="row">
-                        <div class="col-lg-4 col-md-6">
-                            <div class="input-group-custom">
-                                <label for="falha-requisito">Falha de Requisito</label>
-                                <input type="number" id="falha-requisito" class="form-control" placeholder="Ex: 5" min="0">
-                            </div>
-                        </div>
-                        
-                        <div class="col-lg-4 col-md-6">
-                            <div class="input-group-custom">
-                                <label for="falha-manual-pre-release">Falha Manual Pré-Release</label>
-                                <input type="number" id="falha-manual-pre-release" class="form-control" placeholder="Ex: 8" min="0">
-                            </div>
-                        </div>
-                        
-                        <div class="col-lg-4 col-md-6">
-                            <div class="input-group-custom">
-                                <label for="falha-automatizada-pre-release">Falha Automatizada Pré-Release</label>
-                                <input type="number" id="falha-automatizada-pre-release" class="form-control" placeholder="Ex: 3" min="0">
-                            </div>
-                        </div>
-                        
-                        <div class="col-lg-4 col-md-6">
-                            <div class="input-group-custom">
-                                <label for="falha-manual-release">Falha Manual Release</label>
-                                <input type="number" id="falha-manual-release" class="form-control" placeholder="Ex: 2" min="0">
-                            </div>
-                        </div>
-                        
-                        <div class="col-lg-4 col-md-6">
-                            <div class="input-group-custom">
-                                <label for="falha-automatizada-release">Falha Automatizada Release</label>
-                                <input type="number" id="falha-automatizada-release" class="form-control" placeholder="Ex: 1" min="0">
-                            </div>
-                        </div>
-                        
-                        <div class="col-lg-4 col-md-6">
-                            <div class="input-group-custom">
-                                <label for="falha-producao">Falha em Produção</label>
-                                <input type="number" id="falha-producao" class="form-control" placeholder="Ex: 0" min="0">
+                    <div class="card" style="background-color: #f8f9fa; border: 1px solid #dee2e6;">
+                        <div class="card-body p-3">
+                            <div class="row">
+                                <div class="col-lg-4 col-md-6">
+                                    <div class="input-group-custom">
+                                        <label for="falha-requisito">Falha de Requisito</label>
+                                        <input type="number" id="falha-requisito" class="form-control" placeholder="Ex: 5" min="0">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-lg-4 col-md-6">
+                                    <div class="input-group-custom">
+                                        <label for="falha-manual-pre-release">Falha Manual Pré-Release</label>
+                                        <input type="number" id="falha-manual-pre-release" class="form-control" placeholder="Ex: 8" min="0">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-lg-4 col-md-6">
+                                    <div class="input-group-custom">
+                                        <label for="falha-automatizada-pre-release">Falha Automatizada Pré-Release</label>
+                                        <input type="number" id="falha-automatizada-pre-release" class="form-control" placeholder="Ex: 3" min="0">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-lg-4 col-md-6">
+                                    <div class="input-group-custom">
+                                        <label for="falha-manual-release">Falha Manual Release</label>
+                                        <input type="number" id="falha-manual-release" class="form-control" placeholder="Ex: 2" min="0">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-lg-4 col-md-6">
+                                    <div class="input-group-custom">
+                                        <label for="falha-automatizada-release">Falha Automatizada Release</label>
+                                        <input type="number" id="falha-automatizada-release" class="form-control" placeholder="Ex: 1" min="0">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-lg-4 col-md-6">
+                                    <div class="input-group-custom">
+                                        <label for="falha-producao">Falha em Produção</label>
+                                        <input type="number" id="falha-producao" class="form-control" placeholder="Ex: 0" min="0">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Métricas Críticas (Métrica 2 e 3) -->
+                <!-- Métricas Críticas -->
                 <div class="col-lg-6">
                     <h4 class="text-primary mb-3">🎯 Métricas Críticas</h4>
                     
-                    <div class="input-group-custom">
-                        <label for="taxa-escape">Taxa de Escape (%)</label>
-                        <input type="number" id="taxa-escape" class="form-control" placeholder="Ex: 3.2" step="0.1" min="0" max="100">
-                        <small class="form-text text-muted">Meta: < 5%</small>
+                    <div class="card" style="background-color: #f8f9fa; border: 1px solid #dee2e6;">
+                        <div class="card-body p-3">
+                            <div class="input-group-custom">
+                                <label for="taxa-escape">Taxa de Escape (%)</label>
+                                <input type="number" id="taxa-escape" class="form-control" placeholder="Ex: 3.2" step="0.1" min="0" max="100">
+                                <small class="form-text text-muted">Meta: < 5%</small>
+                            </div>
+                            
+                            <div class="input-group-custom">
+                                <label for="mttr">MTTR - Tempo Médio Resolução (horas)</label>
+                                <input type="number" id="mttr" class="form-control" placeholder="Ex: 6.2" step="0.1" min="0">
+                                <small class="form-text text-muted">Meta: < 8h</small>
+                            </div>
+                            
+                            <div class="input-group-custom">
+                                <label for="historias-totais">Histórias de Usuário Totais</label>
+                                <input type="number" id="historias-totais" class="form-control" placeholder="Ex: 10" min="0">
+                                <small class="form-text text-muted">Total de histórias no período</small>
+                            </div>
+                            
+                            <div class="input-group-custom">
+                                <label for="historias-aceitas">Histórias de Usuário Aceitas</label>
+                                <input type="number" id="historias-aceitas" class="form-control" placeholder="Ex: 9" min="0">
+                                <small class="form-text text-muted">Histórias aceitas pelo PO</small>
+                            </div>
+                        </div>
                     </div>
                     
-                    <div class="input-group-custom">
-                        <label for="mttr">MTTR - Tempo Médio Resolução (horas)</label>
-                        <input type="number" id="mttr" class="form-control" placeholder="Ex: 6.2" step="0.1" min="0">
-                        <small class="form-text text-muted">Meta: < 8h</small>
-                    </div>
-                    
-                    <div class="input-group-custom">
-                        <label for="historias-totais">Histórias de Usuário Totais</label>
-                        <input type="number" id="historias-totais" class="form-control" placeholder="Ex: 10" min="0">
-                        <small class="form-text text-muted">Total de histórias no período</small>
-                    </div>
-                    
-                    <div class="input-group-custom">
-                        <label for="historias-aceitas">Histórias de Usuário Aceitas</label>
-                        <input type="number" id="historias-aceitas" class="form-control" placeholder="Ex: 9" min="0">
-                        <small class="form-text text-muted">Histórias aceitas pelo PO</small>
+                    <!-- Agrupamento: Falhas e Bugs Por Prioridade -->
+                    <div class="card mt-3 mb-3" style="background-color: #f8f9fa; border: 1px solid #dee2e6;">
+                        <div class="card-body p-3">
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <small class="text-muted fw-bold d-block mb-2">🔴 Falhas Por Prioridade</small>
+                                </div>
+                                <div class="col-6">
+                                    <div class="input-group-custom">
+                                        <label for="falha-prioridade-trivial" class="small">Trivial</label>
+                                        <input type="number" id="falha-prioridade-trivial" class="form-control form-control-sm" placeholder="Ex: 2" min="0">
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="input-group-custom">
+                                        <label for="falha-prioridade-media" class="small">Média</label>
+                                        <input type="number" id="falha-prioridade-media" class="form-control form-control-sm" placeholder="Ex: 5" min="0">
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="input-group-custom">
+                                        <label for="falha-prioridade-gravissima" class="small">Gravíssima</label>
+                                        <input type="number" id="falha-prioridade-gravissima" class="form-control form-control-sm" placeholder="Ex: 3" min="0">
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="input-group-custom">
+                                        <label for="falha-prioridade-critica" class="small">Crítica</label>
+                                        <input type="number" id="falha-prioridade-critica" class="form-control form-control-sm" placeholder="Ex: 1" min="0">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-12">
+                                    <small class="text-muted fw-bold d-block mb-2">🐛 Bugs Por Prioridade</small>
+                                </div>
+                                <div class="col-6">
+                                    <div class="input-group-custom">
+                                        <label for="bug-prioridade-trivial" class="small">Trivial</label>
+                                        <input type="number" id="bug-prioridade-trivial" class="form-control form-control-sm" placeholder="Ex: 1" min="0">
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="input-group-custom">
+                                        <label for="bug-prioridade-media" class="small">Média</label>
+                                        <input type="number" id="bug-prioridade-media" class="form-control form-control-sm" placeholder="Ex: 2" min="0">
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="input-group-custom">
+                                        <label for="bug-prioridade-gravissima" class="small">Gravíssima</label>
+                                        <input type="number" id="bug-prioridade-gravissima" class="form-control form-control-sm" placeholder="Ex: 1" min="0">
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="input-group-custom">
+                                        <label for="bug-prioridade-critica" class="small">Crítica</label>
+                                        <input type="number" id="bug-prioridade-critica" class="form-control form-control-sm" placeholder="Ex: 0" min="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Métricas de Eficiência (Métrica 4, 5 e 6) -->
+                <!-- Métricas de Eficiência -->
                 <div class="col-lg-6">
                     <h4 class="text-primary mb-3">⚡ Métricas de Eficiência</h4>
                     
-                    <div class="input-group-custom">
-                        <label for="taxa-automacao">Taxa de Automação (%)</label>
-                        <input type="number" id="taxa-automacao" class="form-control" placeholder="Ex: 72.3" step="0.1" min="0" max="100">
-                        <small class="form-text text-muted">Meta: > 70%</small>
-                    </div>
-                    
-                    <div class="input-group-custom">
-                        <label for="taxa-acerto">Taxa de Acerto (%)</label>
-                        <input type="number" id="taxa-acerto" class="form-control" placeholder="Ex: 85.7" step="0.1" min="0" max="100">
-                        <small class="form-text text-muted">Meta: > 85%</small>
-                    </div>
-                    
-                    <div class="input-group-custom">
-                        <label for="defeitos-abertos">Defeitos Abertos (Desenvolvimento)</label>
-                        <input type="number" id="defeitos-abertos" class="form-control" placeholder="Ex: 8" min="0">
-                    </div>
-                    
-                    <div class="input-group-custom">
-                        <label for="defeitos-fechados">Defeitos Fechados (Desenvolvimento)</label>
-                        <input type="number" id="defeitos-fechados" class="form-control" placeholder="Ex: 15" min="0">
-                    </div>
-                    
-                    <div class="input-group-custom">
-                        <label for="bugs-abertos">Bugs Abertos (Produção)</label>
-                        <input type="number" id="bugs-abertos" class="form-control" placeholder="Ex: 2" min="0">
-                    </div>
-                    
-                    <div class="input-group-custom">
-                        <label for="bugs-fechados">Bugs Fechados (Produção)</label>
-                        <input type="number" id="bugs-fechados" class="form-control" placeholder="Ex: 3" min="0">
+                    <div class="card" style="background-color: #f8f9fa; border: 1px solid #dee2e6;">
+                        <div class="card-body p-3">
+                            <div class="input-group-custom">
+                                <label for="taxa-automacao">Taxa de Automação (%)</label>
+                                <input type="number" id="taxa-automacao" class="form-control" placeholder="Ex: 72.3" step="0.1" min="0" max="100">
+                                <small class="form-text text-muted">Meta: > 70%</small>
+                            </div>
+                            
+                            <div class="input-group-custom">
+                                <label for="taxa-acerto">Taxa de Acerto (%)</label>
+                                <input type="number" id="taxa-acerto" class="form-control" placeholder="Ex: 85.7" step="0.1" min="0" max="100">
+                                <small class="form-text text-muted">Meta: > 85%</small>
+                            </div>
+                            
+                            <div class="input-group-custom">
+                                <label for="defeitos-abertos">Defeitos Abertos (Desenvolvimento)</label>
+                                <input type="number" id="defeitos-abertos" class="form-control" placeholder="Ex: 8" min="0">
+                            </div>
+                            
+                            <div class="input-group-custom">
+                                <label for="defeitos-fechados">Defeitos Fechados (Desenvolvimento)</label>
+                                <input type="number" id="defeitos-fechados" class="form-control" placeholder="Ex: 15" min="0">
+                            </div>
+                            
+                            <div class="input-group-custom">
+                                <label for="bugs-abertos">Bugs Abertos (Produção)</label>
+                                <input type="number" id="bugs-abertos" class="form-control" placeholder="Ex: 2" min="0">
+                            </div>
+                            
+                            <div class="input-group-custom">
+                                <label for="bugs-fechados">Bugs Fechados (Produção)</label>
+                                <input type="number" id="bugs-fechados" class="form-control" placeholder="Ex: 3" min="0">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -588,7 +675,7 @@
                         </div>
                     </div>
                 </div>
-
+                
                 <!-- Métricas de Eficiência -->
                 <div class="col-lg-6">
                     <h4 class="text-primary mb-3">⚡ Métricas de Eficiência - Explicação</h4>
@@ -793,6 +880,92 @@
                             <small class="text-muted">Meta: >= 90%</small>
                             <div id="aceitacao-historias-status" class="mt-2">
                                 <span class="badge badge-status bg-success">EXCELENTE</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Falhas Por Prioridade (dentro de Métricas Críticas) -->
+            <div class="row mb-4">
+                <div class="col-lg-6 mb-3">
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-exclamation-triangle text-danger"></i> Falhas Por Prioridade
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <div class="text-center">
+                                        <div id="falha-prioridade-trivial-valor" class="h4 mb-1">0</div>
+                                        <small class="text-muted">Trivial</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <div class="text-center">
+                                        <div id="falha-prioridade-media-valor" class="h4 mb-1">0</div>
+                                        <small class="text-muted">Média</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <div class="text-center">
+                                        <div id="falha-prioridade-gravissima-valor" class="h4 mb-1 text-warning">0</div>
+                                        <small class="text-muted">Gravíssima</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <div class="text-center">
+                                        <div id="falha-prioridade-critica-valor" class="h4 mb-1 text-danger">0</div>
+                                        <small class="text-muted">Crítica</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="falhasPrioridadeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bugs Por Prioridade (dentro de Métricas Críticas) -->
+                <div class="col-lg-6 mb-3">
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-bug text-danger"></i> Bugs Por Prioridade
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <div class="text-center">
+                                        <div id="bug-prioridade-trivial-valor" class="h4 mb-1">0</div>
+                                        <small class="text-muted">Trivial</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <div class="text-center">
+                                        <div id="bug-prioridade-media-valor" class="h4 mb-1">0</div>
+                                        <small class="text-muted">Média</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <div class="text-center">
+                                        <div id="bug-prioridade-gravissima-valor" class="h4 mb-1 text-warning">0</div>
+                                        <small class="text-muted">Gravíssima</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <div class="text-center">
+                                        <div id="bug-prioridade-critica-valor" class="h4 mb-1 text-danger">0</div>
+                                        <small class="text-muted">Crítica</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="bugsPrioridadeChart"></canvas>
                             </div>
                         </div>
                     </div>
