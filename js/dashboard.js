@@ -89,6 +89,11 @@ class QADashboardNova {
             bugPrioridadeGravissima: parseInt(document.getElementById('bug-prioridade-gravissima').value) || 0,
             bugPrioridadeCritica: parseInt(document.getElementById('bug-prioridade-critica').value) || 0,
             
+            // Métricas de Testes
+            testesCriados: parseInt(document.getElementById('testes-criados').value) || 0,
+            testesExecutados: parseInt(document.getElementById('testes-executados').value) || 0,
+            testesPassaram: parseInt(document.getElementById('testes-passaram').value) || 0,
+            
             // Informações adicionais
             equipeResponsavel: document.getElementById('equipe-responsavel').value || 'Time QA',
             periodoAnalise: document.getElementById('periodo-analise').value || 'Últimos 30 dias',
@@ -134,6 +139,10 @@ class QADashboardNova {
         this.metricas.aceitacaoHistorias = historiasTotais > 0 ? (historiasAceitas / historiasTotais) * 100 : 0;
         this.metricas.statusAceitacaoHistorias = this.classificarAceitacaoHistorias(this.metricas.aceitacaoHistorias);
 
+        // Taxa de sucesso dos testes
+        const { testesExecutados, testesPassaram } = this.metricas;
+        this.metricas.taxaSucessoTestes = testesExecutados > 0 ? (testesPassaram / testesExecutados) * 100 : 0;
+
         // Status geral baseado nas métricas
         this.metricas.statusGeral = this.calcularStatusGeral();
 
@@ -148,7 +157,8 @@ class QADashboardNova {
             taxaEscape: 5,
             mttr: 8,
             taxaAutomacao: 70,
-            taxaAcerto: 85
+            taxaAcerto: 85,
+            taxaSucessoTestes: 90
         };
 
         // Taxa de Escape (menor é melhor)
@@ -162,6 +172,9 @@ class QADashboardNova {
 
         // Taxa de Acerto (maior é melhor)
         if (this.metricas.taxaAcerto >= metas.taxaAcerto) score += 1;
+
+        // Taxa de Sucesso dos Testes (maior é melhor)
+        if (this.metricas.taxaSucessoTestes >= metas.taxaSucessoTestes) score += 1;
 
         // Falhas em produção (menor é melhor)
         if (this.metricas.falhaProducao === 0) score += 1;
@@ -191,7 +204,8 @@ class QADashboardNova {
             taxaEscape: 5,
             mttr: 8,
             taxaAutomacao: 70,
-            taxaAcerto: 85
+            taxaAcerto: 85,
+            taxaSucessoTestes: 90
         };
 
         if (this.metricas.taxaEscape <= metas.taxaEscape) {
@@ -205,6 +219,9 @@ class QADashboardNova {
         }
         if (this.metricas.taxaAcerto >= metas.taxaAcerto) {
             pontos.push('Excelente taxa de acerto');
+        }
+        if (this.metricas.taxaSucessoTestes >= metas.taxaSucessoTestes) {
+            pontos.push('Taxa de sucesso dos testes dentro da meta');
         }
         if (this.metricas.falhaProducao === 0) {
             pontos.push('Nenhuma falha em produção');
@@ -227,7 +244,8 @@ class QADashboardNova {
             taxaEscape: 5,
             mttr: 8,
             taxaAutomacao: 70,
-            taxaAcerto: 85
+            taxaAcerto: 85,
+            taxaSucessoTestes: 90
         };
 
         if (this.metricas.taxaEscape > metas.taxaEscape) {
@@ -241,6 +259,9 @@ class QADashboardNova {
         }
         if (this.metricas.taxaAcerto < metas.taxaAcerto) {
             pontos.push('Taxa de acerto abaixo da meta');
+        }
+        if (this.metricas.taxaSucessoTestes < metas.taxaSucessoTestes) {
+            pontos.push('Taxa de sucesso dos testes abaixo da meta');
         }
         if (this.metricas.falhaProducao > 0) {
             pontos.push(`Falhas em produção detectadas: ${this.metricas.falhaProducao}`);
@@ -317,6 +338,11 @@ class QADashboardNova {
         document.getElementById('bug-prioridade-media-valor').textContent = this.metricas.bugPrioridadeMedia;
         document.getElementById('bug-prioridade-gravissima-valor').textContent = this.metricas.bugPrioridadeGravissima;
         document.getElementById('bug-prioridade-critica-valor').textContent = this.metricas.bugPrioridadeCritica;
+
+        // Métricas de Testes
+        document.getElementById('testes-criados-valor').textContent = this.metricas.testesCriados;
+        document.getElementById('testes-executados-valor').textContent = this.metricas.testesExecutados;
+        document.getElementById('taxa-sucesso-testes-valor').textContent = `${this.metricas.taxaSucessoTestes.toFixed(1)}%`;
 
         // Atualizar status geral
         const statusElement = document.getElementById('status-geral');
@@ -584,16 +610,16 @@ class QADashboardNova {
             this.charts.metas = new Chart(ctxMetas, {
                 type: 'bar',
                 data: {
-                    labels: ['Taxa Escape', 'MTTR', 'Automação', 'Acerto', 'Aceitação de Histórias'],
+                    labels: ['Taxa Escape', 'MTTR', 'Automação', 'Acerto', 'Aceitação de Histórias', 'Sucesso Testes'],
                     datasets: [{
                         label: 'Atual',
-                        data: [3.2, 6.2, 72.3, 85.7, 90],
+                        data: [3.2, 6.2, 72.3, 85.7, 90, 90.5],
                         backgroundColor: '#3498db',
                         borderColor: '#2980b9',
                         borderWidth: 1
                     }, {
                         label: 'Meta',
-                        data: [5, 8, 70, 85, 90],
+                        data: [5, 8, 70, 85, 90, 90],
                         backgroundColor: '#95a5a6',
                         borderColor: '#7f8c8d',
                         borderWidth: 1
@@ -756,6 +782,32 @@ class QADashboardNova {
                 plugins: [centerTextPluginBugs]
             });
         }
+
+        // Gráfico de Status dos Testes
+        const ctxTestes = document.getElementById('testesChart');
+        if (ctxTestes) {
+            this.charts.testes = new Chart(ctxTestes, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Passaram', 'Falharam'],
+                    datasets: [{
+                        data: [0, 0],
+                        backgroundColor: ['#27ae60', '#e74c3c'],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
     }
 
     atualizarGraficos() {
@@ -783,12 +835,14 @@ class QADashboardNova {
         // Atualizar dados dos gráficos com as métricas calculadas
         if (this.charts.metas) {
             const aceitacaoHistorias = this.metricas.aceitacaoHistorias || 0;
+            const taxaSucessoTestes = this.metricas.taxaSucessoTestes || 0;
             this.charts.metas.data.datasets[0].data = [
                 this.metricas.taxaEscape,
                 this.metricas.mttr,
                 this.metricas.taxaAutomacao,
                 this.metricas.taxaAcerto,
-                aceitacaoHistorias
+                aceitacaoHistorias,
+                taxaSucessoTestes
             ];
             // Atualizar também as metas (incluindo a meta de aceitação que é 90%)
             this.charts.metas.data.datasets[1].data = [
@@ -796,7 +850,8 @@ class QADashboardNova {
                 8,  // MTTR meta
                 70, // Automação meta
                 85, // Acerto meta
-                90  // Aceitação meta
+                90, // Aceitação meta
+                90  // Sucesso Testes meta
             ];
             this.charts.metas.update();
         }
@@ -821,6 +876,13 @@ class QADashboardNova {
                 this.metricas.bugPrioridadeCritica
             ];
             this.charts.bugsPrioridade.update();
+        }
+
+        // Atualizar gráfico de testes
+        if (this.charts.testes) {
+            const testesFalharam = this.metricas.testesExecutados - this.metricas.testesPassaram;
+            this.charts.testes.data.datasets[0].data = [this.metricas.testesPassaram, testesFalharam];
+            this.charts.testes.update();
         }
     }
 
@@ -1174,10 +1236,11 @@ class QADashboardNova {
                 const metricasCriticasElements = collectTopicElements('Métricas Críticas');
                 await addElementsToPage(metricasCriticasElements);
                 
-                // Página 3: Métricas de Eficiência + Comparação Métricas VS Metas (juntos)
+                // Página 3: Métricas de Eficiência + Métricas de Testes + Comparação Métricas VS Metas (juntos)
                 const metricasEficienciaElements = collectTopicElements('Métricas de Eficiência');
+                const metricasTestesElements = collectTopicElements('Métricas de Testes');
                 const comparacaoElements = collectTopicElements('Comparação Métricas VS Metas');
-                const combinedElements2 = [...metricasEficienciaElements, ...comparacaoElements];
+                const combinedElements2 = [...metricasEficienciaElements, ...metricasTestesElements, ...comparacaoElements];
                 await addElementsToPage(combinedElements2);
                 
                 // Página 4: Resumo de Análise (página exclusiva)
