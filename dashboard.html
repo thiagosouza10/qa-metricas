@@ -797,16 +797,24 @@
                             <div class="help-item">
                                 <h6 class="text-dark"><i class="bi bi-exclamation-triangle-fill text-danger"></i> Falha em Produção</h6>
                                 <p class="text-muted mb-2">
-                                    <strong>O que é:</strong> Falhas encontradas em produção após a release.
+                                    <strong>O que valida:</strong> Esta métrica valida se houve falhas detectadas em ambiente de produção durante o período analisado. O objetivo é ter zero falhas em produção, indicando que todos os problemas foram identificados antes do deploy.
                                 </p>
                                 <p class="text-muted mb-2">
-                                    <strong>Quando:</strong> Durante testes de validação em produção ou Bugs reportados pelos usuários.
+                                    <strong>Cálculo:</strong> Falhas em Produção = Valor informado diretamente no campo "Falha em Produção"
                                 </p>
                                 <p class="text-muted mb-2">
-                                    <strong>Como contar:</strong> Conte cada Bug encontrado em produção ou Bugs reportados pelos usuários.
+                                    <strong>O que conta como Falha em Produção:</strong>
                                 </p>
-                                <div class="alert alert-danger py-2">
-                                    <small><strong>Crítico:</strong> Este é o tipo de falha mais custoso e deve ser minimizado ao máximo</small>
+                                <ul class="text-muted mb-2">
+                                    <li>Falhas encontradas durante testes de validação em produção</li>
+                                    <li>Falhas reportadas pelos usuários após o deploy</li>
+                                    <li>Qualquer problema identificado no ambiente de produção</li>
+                                </ul>
+                                <p class="text-muted mb-2">
+                                    <strong>Exemplo:</strong> Falhas em Produção: 0 ✅ (ideal) | Falhas em Produção: 1 ⚠️ (requer atenção)
+                                </p>
+                                <div class="alert alert-info py-2">
+                                    <small><strong>Nota:</strong> Esta métrica permanece no sistema para exibição e análise, mas não conta para o cálculo do score. O ideal é não ter nenhuma falha em produção, garantindo que todos os problemas foram detectados antes do deploy.</small>
                                 </div>
                             </div>
                         </div>
@@ -822,16 +830,23 @@
                     <div class="help-item mb-4">
                         <h6 class="text-dark"><i class="bi bi-bug"></i> Taxa de Escape (%)</h6>
                         <p class="text-muted mb-2">
-                            <strong>O que é:</strong> Percentual de bugs que escaparam dos testes e chegaram à produção.
+                            <strong>O que valida:</strong> Esta métrica mede a eficácia dos processos de teste ao identificar quantos bugs escaparam dos testes e chegaram à produção. Quanto menor a taxa, melhor a qualidade dos testes.
                         </p>
                         <p class="text-muted mb-2">
-                            <strong>Como calcular:</strong> (Bugs em Produção ÷ Total de Bugs Encontrados) × 100
+                            <strong>Cálculo:</strong> Taxa de Escape (%) = (Bugs em Produção ÷ Total de Bugs Encontrados) × 100
                         </p>
                         <p class="text-muted mb-2">
-                            <strong>Exemplo:</strong> Se você encontrou 100 bugs e 3 chegaram à produção: 3 ÷ 100 × 100 = 3%
+                            <strong>Onde:</strong>
+                        </p>
+                        <ul class="text-muted mb-2">
+                            <li><strong>Bugs em Produção:</strong> Soma de bugs abertos + bugs fechados em produção</li>
+                            <li><strong>Total de Bugs Encontrados:</strong> Soma de todos os bugs encontrados durante o desenvolvimento (defeitos abertos + defeitos fechados) + bugs em produção</li>
+                        </ul>
+                        <p class="text-muted mb-2">
+                            <strong>Exemplo:</strong> Defeitos no desenvolvimento: 80. Bugs em produção: 4. Total: 84. Taxa: (4 ÷ 84) × 100 = 4.76% ✅
                         </p>
                         <div class="alert alert-success py-2">
-                            <small><strong>Meta:</strong> Menor que 5% - Indica boa qualidade dos testes</small>
+                            <small><strong>Meta:</strong> ≤ 5% - Indica que menos de 5% dos bugs encontrados chegaram à produção, demonstrando boa eficácia dos testes.</small>
                         </div>
                     </div>
 
@@ -848,6 +863,29 @@
                         </p>
                         <div class="alert alert-success py-2">
                             <small><strong>Meta:</strong> Menor que 8h - Indica eficiência na correção</small>
+                        </div>
+                    </div>
+
+                    <div class="help-item mb-4">
+                        <h6 class="text-dark"><i class="bi bi-bug-fill text-danger"></i> Bugs em Produção (bugs fechados > bugs abertos)</h6>
+                        <p class="text-muted mb-2">
+                            <strong>O que valida:</strong> Esta métrica valida se a quantidade de bugs fechados (corrigidos) em produção é maior que a quantidade de bugs abertos (pendentes). Isso indica que o time está conseguindo resolver os bugs mais rapidamente do que novos bugs estão sendo reportados, demonstrando eficiência na correção.
+                        </p>
+                        <p class="text-muted mb-2">
+                            <strong>Cálculo:</strong> Bugs Fechados (Produção) > Bugs Abertos (Produção)
+                        </p>
+                        <p class="text-muted mb-2">
+                            <strong>Onde:</strong>
+                        </p>
+                        <ul class="text-muted mb-2">
+                            <li><strong>Bugs Abertos (Produção):</strong> Bugs ainda não resolvidos em produção</li>
+                            <li><strong>Bugs Fechados (Produção):</strong> Bugs que foram corrigidos em produção</li>
+                        </ul>
+                        <p class="text-muted mb-2">
+                            <strong>Exemplo:</strong> Bugs Abertos: 1. Bugs Fechados: 2. 2 > 1 ✅ (meta atingida)
+                        </p>
+                        <div class="alert alert-warning py-2">
+                            <small><strong>Meta:</strong> Bugs Fechados > Bugs Abertos - Indica que o time está conseguindo corrigir os bugs em produção mais rapidamente do que novos bugs são reportados, demonstrando boa capacidade de resolução.</small>
                         </div>
                     </div>
 
@@ -1469,4 +1507,5 @@
     <script src="js/dashboard.js"></script>
 </body>
 </html>
+
 

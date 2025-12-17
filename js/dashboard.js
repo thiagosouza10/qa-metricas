@@ -156,7 +156,7 @@ class QADashboardNova {
         const score = this.calcularScoreAtual();
         
         if (score >= 5) return 'EXCELENTE';
-        if (score >= 4) return 'BOM';
+        if (score >= 3) return 'BOM';
         if (score >= 2) return 'ATENCAO';
         return 'CRITICO';
     }
@@ -177,19 +177,14 @@ class QADashboardNova {
         // MTTR (menor é melhor)
         if (this.metricas.mttr <= metas.mttr) score += 1;
 
-        // Taxa de Automação - não conta para o score (campo permanece apenas para exibição)
-
         // Taxa de Acerto (maior é melhor)
         if (this.metricas.taxaAcerto >= metas.taxaAcerto) score += 1;
 
         // Taxa de Sucesso dos Testes (maior é melhor)
         if (this.metricas.taxaSucessoTestes >= metas.taxaSucessoTestes) score += 1;
 
-        // Falhas em produção (menor é melhor)
-        if (this.metricas.falhaProducao === 0) score += 1;
-
-        // Bugs em produção (menor é melhor)
-        if ((this.metricas.bugsAbertos + this.metricas.bugsFechados) <= 3) score += 1;
+        // Bugs em produção (bugs fechados maior que bugs abertos)
+        if (this.metricas.bugsFechados > this.metricas.bugsAbertos) score += 1;
 
         // Aceitação de História de Usuário (maior é melhor, >= 90%)
         if (this.metricas.aceitacaoHistorias >= 90) score += 1;
@@ -271,6 +266,10 @@ class QADashboardNova {
         }
         if (this.metricas.bugsAbertos > 0) {
             pontos.push(`Bugs abertos em produção: ${this.metricas.bugsAbertos}`);
+        }
+        // Verificar se bugs fechados não são maiores que bugs abertos
+        if (this.metricas.bugsFechados <= this.metricas.bugsAbertos && (this.metricas.bugsAbertos > 0 || this.metricas.bugsFechados > 0)) {
+            pontos.push(`Bugs em produção: fechados (${this.metricas.bugsFechados}) não superam abertos (${this.metricas.bugsAbertos})`);
         }
         if (this.metricas.aceitacaoHistorias < 90) {
             if (this.metricas.aceitacaoHistorias < 70) {
