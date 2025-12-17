@@ -1237,10 +1237,10 @@ class QADashboardNova {
                     // Aguardar renderização final dos gráficos
                     await new Promise(resolve => setTimeout(resolve, 800));
 
-                    // Capturar a seção com melhor qualidade e nitidez
+                    // Capturar a seção com qualidade otimizada para PDF pequeno
                     const canvas = await html2canvas(sectionElement, {
                         backgroundColor: '#ffffff',
-                        scale: 3,
+                        scale: 1.5, // Reduzido de 3 para 1.5 para reduzir tamanho
                         useCORS: true,
                         logging: false,
                         allowTaint: true,
@@ -1248,7 +1248,7 @@ class QADashboardNova {
                         windowHeight: sectionElement.scrollHeight,
                         width: sectionElement.scrollWidth,
                         height: sectionElement.scrollHeight,
-                        pixelRatio: 2,
+                        pixelRatio: 1, // Reduzido de 2 para 1 para reduzir tamanho
                         letterRendering: true,
                         onclone: (clonedDoc) => {
                             // Garantir que os estilos CSS sejam aplicados no clone
@@ -1319,7 +1319,8 @@ class QADashboardNova {
                     return false;
                 }
 
-                const imgData = canvas.toDataURL('image/png', 1.0);
+                // Comprimir imagem usando JPEG com qualidade otimizada
+                const imgData = canvas.toDataURL('image/jpeg', 0.75); // JPEG com 75% de qualidade para reduzir tamanho
                 const imgWidth = availableWidth;
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
@@ -1340,7 +1341,7 @@ class QADashboardNova {
                 try {
                     if (imgHeight <= availableHeight) {
                         // Cabe perfeitamente
-                        doc.addImage(imgData, 'PNG', margin, currentY, imgWidth, imgHeight);
+                        doc.addImage(imgData, 'JPEG', margin, currentY, imgWidth, imgHeight);
                     } else {
                         // Se não couber, ajustar para caber mantendo proporção
                         const scale = availableHeight / imgHeight;
@@ -1348,7 +1349,7 @@ class QADashboardNova {
                         const scaledWidth = imgWidth * scale;
                         // Centralizar horizontalmente se necessário
                         const xOffset = (pageWidth - scaledWidth) / 2;
-                        doc.addImage(imgData, 'PNG', xOffset, currentY, scaledWidth, scaledHeight);
+                        doc.addImage(imgData, 'JPEG', xOffset, currentY, scaledWidth, scaledHeight);
                     }
                 } catch (error) {
                     console.error('Erro ao adicionar imagem ao PDF:', error);
@@ -1573,14 +1574,15 @@ class QADashboardNova {
                     try {
                         canvas = await html2canvas(dashboardElement, {
                             backgroundColor: '#ffffff',
-                            scale: 1.2,
+                            scale: 1.2, // Mantido baixo para reduzir tamanho
                             useCORS: true,
                             logging: false,
                             allowTaint: true,
                             timeout: 30000,
                             imageTimeout: 15000,
                             width: dashboardElement.scrollWidth || dashboardElement.offsetWidth,
-                            height: dashboardElement.scrollHeight || dashboardElement.offsetHeight
+                            height: dashboardElement.scrollHeight || dashboardElement.offsetHeight,
+                            pixelRatio: 1 // Reduzido para 1 para reduzir tamanho
                         });
                         
                         if (!canvas || canvas.width === 0 || canvas.height === 0) {
@@ -1606,7 +1608,8 @@ class QADashboardNova {
                         throw new Error('Canvas não pôde ser capturado corretamente');
                     }
                     
-                    const imgData = canvas.toDataURL('image/png', 1.0);
+                    // Comprimir imagem usando JPEG com qualidade otimizada
+                    const imgData = canvas.toDataURL('image/jpeg', 0.75); // JPEG com 75% de qualidade para reduzir tamanho
                     
                     // Validar se a imagem foi gerada
                     if (!imgData || imgData === 'data:,') {
@@ -1635,7 +1638,7 @@ class QADashboardNova {
                     
                     // Adicionar imagem na página
                     try {
-                        doc.addImage(imgData, 'PNG', margin, startY, imgWidth, finalHeight);
+                        doc.addImage(imgData, 'JPEG', margin, startY, imgWidth, finalHeight);
                     } catch (addImageError) {
                         console.error('Erro ao adicionar imagem ao PDF:', addImageError);
                         throw new Error('Falha ao adicionar imagem ao PDF: ' + addImageError.message);
@@ -1743,13 +1746,15 @@ class QADashboardNova {
         return new Promise((resolve) => {
             html2canvas(canvas, {
                 backgroundColor: '#ffffff',
-                scale: 3, // Aumentado para melhor qualidade
+                scale: 1.5, // Reduzido de 3 para 1.5 para reduzir tamanho
                 useCORS: true,
                 logging: false,
                 width: canvas.width,
-                height: canvas.height
+                height: canvas.height,
+                pixelRatio: 1 // Reduzido para 1 para reduzir tamanho
             }).then(canvas => {
-                const imgData = canvas.toDataURL('image/png', 1.0);
+                // Usar JPEG com compressão para reduzir tamanho
+                const imgData = canvas.toDataURL('image/jpeg', 0.75);
                 resolve(imgData);
             }).catch((error) => {
                 console.log('Erro ao capturar gráfico:', error);
@@ -1764,7 +1769,7 @@ class QADashboardNova {
                 ctx.font = '16px Arial';
                 ctx.textAlign = 'center';
                 ctx.fillText('Gráfico não disponível', 200, 150);
-                resolve(fallbackCanvas.toDataURL('image/png'));
+                resolve(fallbackCanvas.toDataURL('image/jpeg', 0.75));
             });
         });
     }
