@@ -14,6 +14,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js DataLabels Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <!-- jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <!-- html2canvas para capturar gráficos -->
@@ -101,6 +103,96 @@
             font-size: 0.9rem;
             padding: 0.5rem 1rem;
             border-radius: 20px;
+        }
+        
+        /* Estilos para o header do dashboard melhorado */
+        .dashboard-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+        
+        .dashboard-header h1 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .dashboard-header .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            margin-bottom: 0;
+        }
+        
+        .score-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            min-width: 200px;
+        }
+        
+        .score-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .score-value {
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+        
+        .score-badge {
+            font-size: 1.1rem;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 700;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .score-badge.excelente {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .score-badge.bom {
+            background: var(--info-color);
+            color: white;
+        }
+        
+        .score-badge.atencao {
+            background: var(--warning-color);
+            color: white;
+        }
+        
+        .score-badge.critico {
+            background: var(--danger-color);
+            color: white;
+        }
+        
+        .dashboard-date {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.85rem;
+            margin-top: 0.75rem;
         }
         
         .chart-container {
@@ -206,6 +298,70 @@
         
         .hidden {
             display: none !important;
+        }
+        
+        /* Estilos para separação visual dos tópicos do dashboard */
+        .dashboard-topic-section {
+            margin-top: 3rem;
+            margin-bottom: 2rem;
+            padding-top: 2rem;
+            border-top: 3px solid #e9ecef;
+            position: relative;
+        }
+        
+        .dashboard-topic-section:first-of-type {
+            border-top: none;
+            padding-top: 0;
+            margin-top: 0;
+        }
+        
+        .dashboard-topic-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .dashboard-topic-header h4 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .dashboard-topic-header.falhas {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.2);
+        }
+        
+        .dashboard-topic-header.criticas {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.2);
+        }
+        
+        .dashboard-topic-header.eficiencia {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.2);
+        }
+        
+        .dashboard-topic-header.testes {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.2);
+        }
+        
+        .dashboard-topic-header.comparacao {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.2);
+        }
+        
+        .dashboard-topic-header.resumo {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            box-shadow: 0 4px 15px rgba(52, 144, 219, 0.2);
         }
         
         @media (max-width: 768px) {
@@ -850,27 +1006,27 @@
         <!-- Dashboard de Resultados -->
         <div id="dashboard" class="hidden">
             <!-- Header do Dashboard -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h1 class="h3 mb-1">📊 Dashboard de Métricas QA</h1>
-                            <p class="text-muted mb-0">Métricas essenciais para reviews de liderança</p>
-                        </div>
-                        <div class="text-end">
-                            <span id="status-geral" class="badge badge-status bg-primary">BOM</span>
-                            <div class="small text-muted mt-1" id="data-geracao">2024-01-15 10:30:00</div>
+            <div class="dashboard-header">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1>📊 Dashboard de Métricas QA</h1>
+                        <p class="subtitle">Métricas essenciais para evolução das squads</p>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="score-card">
+                            <div class="score-label">Score Geral</div>
+                            <div id="status-geral" class="score-badge bom">BOM</div>
+                            <div class="dashboard-date" id="data-geracao">2024-01-15 10:30:00</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Tópico: Falhas durante o Ciclo de Desenvolvimento -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h4 class="text-primary mb-3">🔴 Falhas durante o Ciclo de Desenvolvimento</h4>
+            <div class="dashboard-topic-section">
+                <div class="dashboard-topic-header falhas">
+                    <h4>🔴 Falhas durante o Ciclo de Desenvolvimento</h4>
                 </div>
-            </div>
             
             <div class="row mb-4">
                 <div class="col-12">
@@ -884,44 +1040,6 @@
                             <!-- Avisos e Parabéns -->
                             <div id="avisos-falhas" class="mb-3"></div>
                             
-                            <div class="row">
-                                <div class="col-lg-4 mb-3">
-                                    <div class="text-center">
-                                        <div id="falha-requisito-valor" class="h4 mb-1">0</div>
-                                        <small class="text-muted">Falha de Requisito</small>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4 mb-3">
-                                    <div class="text-center">
-                                        <div id="falha-manual-pre-release-valor" class="h4 mb-1">0</div>
-                                        <small class="text-muted">Falha Manual Pré-Release</small>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4 mb-3">
-                                    <div class="text-center">
-                                        <div id="falha-automatizada-pre-release-valor" class="h4 mb-1">0</div>
-                                        <small class="text-muted">Falha Automatizada Pré-Release</small>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4 mb-3">
-                                    <div class="text-center">
-                                        <div id="falha-manual-release-valor" class="h4 mb-1">0</div>
-                                        <small class="text-muted">Falha Manual Release</small>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4 mb-3">
-                                    <div class="text-center">
-                                        <div id="falha-automatizada-release-valor" class="h4 mb-1">0</div>
-                                        <small class="text-muted">Falha Automatizada Release</small>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4 mb-3">
-                                    <div class="text-center">
-                                        <div id="falha-producao-valor" class="h4 mb-1 text-danger">0</div>
-                                        <small class="text-muted">Falha em Produção</small>
-                                    </div>
-                                </div>
-                            </div>
                             <div class="chart-container">
                                 <canvas id="falhasChart"></canvas>
                             </div>
@@ -929,13 +1047,13 @@
                     </div>
                 </div>
             </div>
+            </div>
 
             <!-- Tópico: Métricas Críticas -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h4 class="text-primary mb-3">🎯 Métricas Críticas</h4>
+            <div class="dashboard-topic-section">
+                <div class="dashboard-topic-header criticas">
+                    <h4>🎯 Métricas Críticas</h4>
                 </div>
-            </div>
             
             <div class="row mb-4">
                 <!-- Taxa de Escape -->
@@ -994,32 +1112,6 @@
                             </h5>
                         </div>
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-6 mb-3">
-                                    <div class="text-center">
-                                        <div id="falha-prioridade-trivial-valor" class="h4 mb-1">0</div>
-                                        <small class="text-muted">Trivial</small>
-                                    </div>
-                                </div>
-                                <div class="col-6 mb-3">
-                                    <div class="text-center">
-                                        <div id="falha-prioridade-media-valor" class="h4 mb-1">0</div>
-                                        <small class="text-muted">Média</small>
-                                    </div>
-                                </div>
-                                <div class="col-6 mb-3">
-                                    <div class="text-center">
-                                        <div id="falha-prioridade-gravissima-valor" class="h4 mb-1 text-warning">0</div>
-                                        <small class="text-muted">Gravíssima</small>
-                                    </div>
-                                </div>
-                                <div class="col-6 mb-3">
-                                    <div class="text-center">
-                                        <div id="falha-prioridade-critica-valor" class="h4 mb-1 text-danger">0</div>
-                                        <small class="text-muted">Crítica</small>
-                                    </div>
-                                </div>
-                            </div>
                             <div class="chart-container">
                                 <canvas id="falhasPrioridadeChart"></canvas>
                             </div>
@@ -1036,32 +1128,6 @@
                             </h5>
                         </div>
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-6 mb-3">
-                                    <div class="text-center">
-                                        <div id="bug-prioridade-trivial-valor" class="h4 mb-1">0</div>
-                                        <small class="text-muted">Trivial</small>
-                                    </div>
-                                </div>
-                                <div class="col-6 mb-3">
-                                    <div class="text-center">
-                                        <div id="bug-prioridade-media-valor" class="h4 mb-1">0</div>
-                                        <small class="text-muted">Média</small>
-                                    </div>
-                                </div>
-                                <div class="col-6 mb-3">
-                                    <div class="text-center">
-                                        <div id="bug-prioridade-gravissima-valor" class="h4 mb-1 text-warning">0</div>
-                                        <small class="text-muted">Gravíssima</small>
-                                    </div>
-                                </div>
-                                <div class="col-6 mb-3">
-                                    <div class="text-center">
-                                        <div id="bug-prioridade-critica-valor" class="h4 mb-1 text-danger">0</div>
-                                        <small class="text-muted">Crítica</small>
-                                    </div>
-                                </div>
-                            </div>
                             <div class="chart-container">
                                 <canvas id="bugsPrioridadeChart"></canvas>
                             </div>
@@ -1069,13 +1135,13 @@
                     </div>
                 </div>
             </div>
+            </div>
 
             <!-- Tópico: Métricas de Eficiência -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h4 class="text-primary mb-3">⚡ Métricas de Eficiência</h4>
+            <div class="dashboard-topic-section">
+                <div class="dashboard-topic-header eficiencia">
+                    <h4>⚡ Métricas de Eficiência</h4>
                 </div>
-            </div>
             
             <div class="row mb-4">
                 <!-- Taxa de Automação -->
@@ -1178,16 +1244,16 @@
                     </div>
                 </div>
             </div>
+            </div>
 
             <!-- Tópico: Métricas de Testes -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h4 class="text-primary mb-3">🧪 Métricas de Testes</h4>
+            <div class="dashboard-topic-section">
+                <div class="dashboard-topic-header testes">
+                    <h4>🧪 Métricas de Testes</h4>
                 </div>
-            </div>
             
             <div class="row mb-4">
-                <div class="col-lg col-md-6 mb-3">
+                <div class="col-lg-4 col-md-6 mb-3">
                     <div class="card">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">
@@ -1203,7 +1269,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg col-md-6 mb-3">
+                <div class="col-lg-4 col-md-6 mb-3">
                     <div class="card">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">
@@ -1219,7 +1285,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg col-md-6 mb-3">
+                <div class="col-lg-4 col-md-6 mb-3">
                     <div class="card">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">
@@ -1235,7 +1301,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg col-md-6 mb-3">
+                <div class="col-lg-6 col-md-6 mb-3">
                     <div class="card">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">
@@ -1251,7 +1317,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg col-md-6 mb-3">
+                <div class="col-lg-6 col-md-6 mb-3">
                     <div class="card">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">
@@ -1268,18 +1334,19 @@
                 </div>
             </div>
 
-            <!-- Gráfico de Status dos Testes -->
-            <div class="row mb-4">
-                <div class="col-lg-6 mb-3">
-                    <div class="card">
-                        <div class="card-header bg-white">
-                            <h5 class="card-title mb-0">
-                                <i class="bi bi-graph-up"></i> Status dos Testes
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="chart-container">
-                                <canvas id="testesChart"></canvas>
+                <!-- Gráfico de Status dos Testes -->
+                <div class="row mb-4">
+                    <div class="col-lg-6 mb-3">
+                        <div class="card">
+                            <div class="card-header bg-white">
+                                <h5 class="card-title mb-0">
+                                    <i class="bi bi-graph-up"></i> Status dos Testes
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="testesChart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1287,11 +1354,10 @@
             </div>
 
             <!-- Tópico: Comparação Métricas VS Metas -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h4 class="text-primary mb-3">📊 Comparação Métricas VS Metas</h4>
+            <div class="dashboard-topic-section">
+                <div class="dashboard-topic-header comparacao">
+                    <h4>📊 Comparação Métricas VS Metas</h4>
                 </div>
-            </div>
             
             <div class="row mb-4">
                 <div class="col-12">
@@ -1309,16 +1375,17 @@
                     </div>
                 </div>
             </div>
+            </div>
 
             <!-- Resumo Executivo -->
+            <div class="dashboard-topic-section">
+                <div class="dashboard-topic-header resumo">
+                    <h4>📋 Resumo de Análise</h4>
+                </div>
+            
             <div class="row">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="card-title mb-0">
-                                <i class="bi bi-file-text"></i> Resumo de Análise
-                            </h5>
-                        </div>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-6">
@@ -1337,6 +1404,7 @@
                         </div>
                     </div>
                 </div>
+            </div>
             </div>
         </div>
 

@@ -153,6 +153,15 @@ class QADashboardNova {
     }
 
     calcularStatusGeral() {
+        const score = this.calcularScoreAtual();
+        
+        if (score >= 5) return 'EXCELENTE';
+        if (score >= 4) return 'BOM';
+        if (score >= 2) return 'ATENCAO';
+        return 'CRITICO';
+    }
+
+    calcularScoreAtual() {
         let score = 0;
         const metas = {
             taxaEscape: 5,
@@ -185,10 +194,7 @@ class QADashboardNova {
         // Aceitação de História de Usuário (maior é melhor, >= 90%)
         if (this.metricas.aceitacaoHistorias >= 90) score += 1;
 
-        if (score >= 5) return 'EXCELENTE';
-        if (score >= 4) return 'BOM';
-        if (score >= 2) return 'ATENCAO';
-        return 'CRITICO';
+        return score;
     }
 
     classificarAceitacaoHistorias(percentual) {
@@ -280,14 +286,6 @@ class QADashboardNova {
     }
 
     atualizarDashboard() {
-        // Falhas durante o ciclo de Desenvolvimento
-        document.getElementById('falha-requisito-valor').textContent = this.metricas.falhaRequisito;
-        document.getElementById('falha-manual-pre-release-valor').textContent = this.metricas.falhaManualPreRelease;
-        document.getElementById('falha-automatizada-pre-release-valor').textContent = this.metricas.falhaAutomatizadaPreRelease;
-        document.getElementById('falha-manual-release-valor').textContent = this.metricas.falhaManualRelease;
-        document.getElementById('falha-automatizada-release-valor').textContent = this.metricas.falhaAutomatizadaRelease;
-        document.getElementById('falha-producao-valor').textContent = this.metricas.falhaProducao;
-
         // Atualizar avisos e parabéns para falhas
         this.atualizarAvisosFalhas();
 
@@ -321,17 +319,6 @@ class QADashboardNova {
         document.getElementById('bugs-fechados-valor').textContent = this.metricas.bugsFechados;
         document.getElementById('bugs-abertos-valor').textContent = this.metricas.bugsAbertos;
 
-        // Falhas Por Prioridade
-        document.getElementById('falha-prioridade-trivial-valor').textContent = this.metricas.falhaPrioridadeTrivial;
-        document.getElementById('falha-prioridade-media-valor').textContent = this.metricas.falhaPrioridadeMedia;
-        document.getElementById('falha-prioridade-gravissima-valor').textContent = this.metricas.falhaPrioridadeGravissima;
-        document.getElementById('falha-prioridade-critica-valor').textContent = this.metricas.falhaPrioridadeCritica;
-
-        // Bugs Por Prioridade
-        document.getElementById('bug-prioridade-trivial-valor').textContent = this.metricas.bugPrioridadeTrivial;
-        document.getElementById('bug-prioridade-media-valor').textContent = this.metricas.bugPrioridadeMedia;
-        document.getElementById('bug-prioridade-gravissima-valor').textContent = this.metricas.bugPrioridadeGravissima;
-        document.getElementById('bug-prioridade-critica-valor').textContent = this.metricas.bugPrioridadeCritica;
 
         // Métricas de Testes
         document.getElementById('testes-criados-valor').textContent = this.metricas.testesCriados;
@@ -342,8 +329,23 @@ class QADashboardNova {
 
         // Atualizar status geral
         const statusElement = document.getElementById('status-geral');
+        
+        if (statusElement) {
         statusElement.textContent = this.metricas.statusGeral;
-        statusElement.className = `badge badge-status ${this.getStatusClass(this.metricas.statusGeral)}`;
+            // Remover todas as classes de status
+            statusElement.className = 'score-badge';
+            // Adicionar classe baseada no status
+            const statusLower = this.metricas.statusGeral.toLowerCase();
+            if (statusLower === 'excelente') {
+                statusElement.classList.add('excelente');
+            } else if (statusLower === 'bom') {
+                statusElement.classList.add('bom');
+            } else if (statusLower === 'atencao' || statusLower === 'atenção') {
+                statusElement.classList.add('atencao');
+            } else if (statusLower === 'critico' || statusLower === 'crítico') {
+                statusElement.classList.add('critico');
+            }
+        }
 
         // Atualizar data de geração
         document.getElementById('data-geracao').textContent = this.metricas.dataGeracao;
@@ -517,8 +519,33 @@ class QADashboardNova {
         // Gráfico de Falhas durante o ciclo de Desenvolvimento
         const ctxFalhas = document.getElementById('falhasChart');
         if (ctxFalhas) {
+            // Criar gradientes para as barras
+            const createGradient = (ctx, color1, color2) => {
+                const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                gradient.addColorStop(0, color1);
+                gradient.addColorStop(1, color2);
+                return gradient;
+            };
+
+            const ctx = ctxFalhas.getContext('2d');
+            const gradients = [
+                createGradient(ctx, '#ffeb3b', '#ffc107'), // Falha de Requisito - Amarelo mais claro
+                createGradient(ctx, '#f39c12', '#e67e22'), // Falha Manual Pré-Release - Amarelo mais escuro
+                createGradient(ctx, '#e67e22', '#f39c12'), // Falha Automatizada Pré-Release - Amarelo mais escuro
+                createGradient(ctx, '#ff6b6b', '#ee5a6f'), // Falha Manual Release - Vermelho mais claro
+                createGradient(ctx, '#ee5a6f', '#ff6b6b'), // Falha Automatizada Release - Vermelho mais claro
+                createGradient(ctx, '#c0392b', '#a93226')  // Falha em Produção - Vermelho forte
+            ];
+
+            // Verificar se o plugin ChartDataLabels está disponível
+            const plugins = [];
+            if (typeof ChartDataLabels !== 'undefined') {
+                plugins.push(ChartDataLabels);
+            }
+
             this.charts.falhas = new Chart(ctxFalhas, {
                 type: 'bar',
+                plugins: plugins.length > 0 ? plugins : undefined,
                 data: {
                     labels: [
                         'Falha de Requisito',
@@ -531,43 +558,122 @@ class QADashboardNova {
                     datasets: [{
                         label: 'Quantidade de Falhas',
                         data: [0, 0, 0, 0, 0, 0],
-                        backgroundColor: [
-                            '#e74c3c',
-                            '#f39c12',
-                            '#f39c12',
-                            '#3498db',
-                            '#3498db',
-                            '#c0392b'
-                        ],
+                        backgroundColor: gradients,
                         borderColor: [
-                            '#c0392b',
-                            '#e67e22',
-                            '#e67e22',
-                            '#2980b9',
-                            '#2980b9',
-                            '#a93226'
+                            '#ffc107',  // Falha de Requisito - Amarelo mais claro
+                            '#e67e22',  // Falha Manual Pré-Release - Amarelo mais escuro
+                            '#f39c12',  // Falha Automatizada Pré-Release - Amarelo mais escuro
+                            '#ee5a6f',  // Falha Manual Release - Vermelho mais claro
+                            '#ff6b6b',  // Falha Automatizada Release - Vermelho mais claro
+                            '#a93226'   // Falha em Produção - Vermelho forte
                         ],
-                        borderWidth: 2
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        borderSkipped: false,
+                        barThickness: 'flex',
+                        maxBarThickness: 60
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    animation: {
+                        duration: 1500,
+                        easing: 'easeInOutQuart'
+                    },
                     plugins: {
                         legend: {
                             display: false
                         },
                         title: {
                             display: true,
-                            text: 'Distribuição de Falhas durante o Ciclo de Desenvolvimento'
+                            text: 'Distribuição de Falhas durante o Ciclo de Desenvolvimento',
+                            font: {
+                                size: 16,
+                                weight: 'bold',
+                                family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                            },
+                            padding: {
+                                top: 10,
+                                bottom: 20
+                            },
+                            color: '#2c3e50'
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(44, 62, 80, 0.95)',
+                            padding: 12,
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 13
+                            },
+                            borderColor: '#3498db',
+                            borderWidth: 2,
+                            cornerRadius: 8,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.parsed.y} falha(s)`;
+                                }
+                            }
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            color: '#2c3e50',
+                            font: {
+                                size: 13,
+                                weight: 'bold',
+                                family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                            },
+                            formatter: function(value) {
+                                return value > 0 ? value : '';
+                            },
+                            padding: {
+                                top: 5
+                            }
                         }
                     },
                     scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    size: 11,
+                                    family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                                },
+                                color: '#6c757d',
+                                maxRotation: 45,
+                                minRotation: 0
+                            }
+                        },
                         y: {
                             beginAtZero: true,
+                            grid: {
+                                color: 'rgba(108, 117, 125, 0.1)',
+                                lineWidth: 1
+                            },
                             ticks: {
-                                stepSize: 1
+                                stepSize: 1,
+                                font: {
+                                    size: 11,
+                                    family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                                },
+                                color: '#6c757d',
+                                padding: 8
                             }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            top: 10,
+                            bottom: 10,
+                            left: 10,
+                            right: 10
                         }
                     }
                 }
@@ -577,8 +683,14 @@ class QADashboardNova {
         // Gráfico de Defects vs Bugs
         const ctxDefectsBugs = document.getElementById('defectsBugsChart');
         if (ctxDefectsBugs) {
+            const pluginsDefectsBugs = [];
+            if (typeof ChartDataLabels !== 'undefined') {
+                pluginsDefectsBugs.push(ChartDataLabels);
+            }
+
             this.charts.defectsBugs = new Chart(ctxDefectsBugs, {
                 type: 'doughnut',
+                plugins: pluginsDefectsBugs.length > 0 ? pluginsDefectsBugs : undefined,
                 data: {
                     labels: ['Defeitos (Dev)', 'Bugs (Prod)'],
                     datasets: [{
@@ -594,6 +706,17 @@ class QADashboardNova {
                     plugins: {
                         legend: {
                             position: 'bottom'
+                        },
+                        datalabels: {
+                            color: '#ffffff',
+                            font: {
+                                size: 14,
+                                weight: 'bold',
+                                family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                            },
+                            formatter: function(value) {
+                                return value > 0 ? value : '';
+                            }
                         }
                     }
                 }
@@ -603,8 +726,14 @@ class QADashboardNova {
         // Gráfico de Comparação com Metas
         const ctxMetas = document.getElementById('metasChart');
         if (ctxMetas) {
+            const pluginsMetas = [];
+            if (typeof ChartDataLabels !== 'undefined') {
+                pluginsMetas.push(ChartDataLabels);
+            }
+
             this.charts.metas = new Chart(ctxMetas, {
                 type: 'bar',
+                plugins: pluginsMetas.length > 0 ? pluginsMetas : undefined,
                 data: {
                     labels: ['Taxa Escape', 'MTTR', 'Acerto', 'Aceitação de Histórias', 'Sucesso Testes'],
                     datasets: [{
@@ -633,6 +762,29 @@ class QADashboardNova {
                     plugins: {
                         legend: {
                             position: 'top'
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            color: '#2c3e50',
+                            font: {
+                                size: 11,
+                                weight: 'bold',
+                                family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                            },
+                            formatter: function(value, context) {
+                                if (value <= 0) return '';
+                                const label = context.chart.data.labels[context.dataIndex];
+                                // MTTR deve ser exibido em horas
+                                if (label === 'MTTR') {
+                                    return value.toFixed(1) + 'h';
+                                }
+                                // Todos os outros são porcentagem
+                                return value.toFixed(1) + '%';
+                            },
+                            padding: {
+                                top: 3
+                            }
                         }
                     }
                 }
@@ -667,8 +819,14 @@ class QADashboardNova {
         // Gráfico de Falhas Por Prioridade
         const ctxFalhasPrioridade = document.getElementById('falhasPrioridadeChart');
         if (ctxFalhasPrioridade) {
+            const pluginsFalhasPrioridade = [centerTextPluginFalhas];
+            if (typeof ChartDataLabels !== 'undefined') {
+                pluginsFalhasPrioridade.push(ChartDataLabels);
+            }
+
             this.charts.falhasPrioridade = new Chart(ctxFalhasPrioridade, {
                 type: 'doughnut',
+                plugins: pluginsFalhasPrioridade,
                 data: {
                     labels: ['Trivial', 'Média', 'Gravíssima', 'Crítica'],
                     datasets: [{
@@ -702,10 +860,20 @@ class QADashboardNova {
                                     return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
                                 }
                             }
+                        },
+                        datalabels: {
+                            color: '#ffffff',
+                            font: {
+                                size: 13,
+                                weight: 'bold',
+                                family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                            },
+                            formatter: function(value) {
+                                return value > 0 ? value : '';
+                            }
                         }
                     }
-                },
-                plugins: [centerTextPluginFalhas]
+                }
             });
         }
 
@@ -737,8 +905,14 @@ class QADashboardNova {
         // Gráfico de Bugs Por Prioridade
         const ctxBugsPrioridade = document.getElementById('bugsPrioridadeChart');
         if (ctxBugsPrioridade) {
+            const pluginsBugsPrioridade = [centerTextPluginBugs];
+            if (typeof ChartDataLabels !== 'undefined') {
+                pluginsBugsPrioridade.push(ChartDataLabels);
+            }
+
             this.charts.bugsPrioridade = new Chart(ctxBugsPrioridade, {
                 type: 'doughnut',
+                plugins: pluginsBugsPrioridade,
                 data: {
                     labels: ['Trivial', 'Média', 'Gravíssima', 'Crítica'],
                     datasets: [{
@@ -772,18 +946,34 @@ class QADashboardNova {
                                     return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
                                 }
                             }
+                        },
+                        datalabels: {
+                            color: '#ffffff',
+                            font: {
+                                size: 13,
+                                weight: 'bold',
+                                family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                            },
+                            formatter: function(value) {
+                                return value > 0 ? value : '';
+                            }
                         }
                     }
-                },
-                plugins: [centerTextPluginBugs]
+                }
             });
         }
 
         // Gráfico de Status dos Testes
         const ctxTestes = document.getElementById('testesChart');
         if (ctxTestes) {
+            const pluginsTestes = [];
+            if (typeof ChartDataLabels !== 'undefined') {
+                pluginsTestes.push(ChartDataLabels);
+            }
+
             this.charts.testes = new Chart(ctxTestes, {
                 type: 'doughnut',
+                plugins: pluginsTestes.length > 0 ? pluginsTestes : undefined,
                 data: {
                     labels: ['Passaram', 'Falharam'],
                     datasets: [{
@@ -799,6 +989,17 @@ class QADashboardNova {
                     plugins: {
                         legend: {
                             position: 'bottom'
+                        },
+                        datalabels: {
+                            color: '#ffffff',
+                            font: {
+                                size: 14,
+                                weight: 'bold',
+                                family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                            },
+                            formatter: function(value) {
+                                return value > 0 ? value : '';
+                            }
                         }
                     }
                 }
@@ -809,6 +1010,24 @@ class QADashboardNova {
     atualizarGraficos() {
         // Atualizar gráfico de Falhas
         if (this.charts.falhas) {
+            // Recriar gradientes para garantir que funcionem após atualização
+            const ctx = this.charts.falhas.canvas.getContext('2d');
+            const createGradient = (ctx, color1, color2) => {
+                const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                gradient.addColorStop(0, color1);
+                gradient.addColorStop(1, color2);
+                return gradient;
+            };
+            
+            const gradients = [
+                createGradient(ctx, '#ffeb3b', '#ffc107'), // Falha de Requisito - Amarelo mais claro
+                createGradient(ctx, '#f39c12', '#e67e22'), // Falha Manual Pré-Release - Amarelo mais escuro
+                createGradient(ctx, '#e67e22', '#f39c12'), // Falha Automatizada Pré-Release - Amarelo mais escuro
+                createGradient(ctx, '#ff6b6b', '#ee5a6f'), // Falha Manual Release - Vermelho mais claro
+                createGradient(ctx, '#ee5a6f', '#ff6b6b'), // Falha Automatizada Release - Vermelho mais claro
+                createGradient(ctx, '#c0392b', '#a93226')  // Falha em Produção - Vermelho forte
+            ];
+            
             this.charts.falhas.data.datasets[0].data = [
                 this.metricas.falhaRequisito,
                 this.metricas.falhaManualPreRelease,
@@ -817,7 +1036,8 @@ class QADashboardNova {
                 this.metricas.falhaAutomatizadaRelease,
                 this.metricas.falhaProducao
             ];
-            this.charts.falhas.update();
+            this.charts.falhas.data.datasets[0].backgroundColor = gradients;
+            this.charts.falhas.update('active');
         }
 
         // Atualizar gráfico Defects vs Bugs
@@ -931,33 +1151,242 @@ class QADashboardNova {
             this.metricas.observacoes = document.getElementById('observacoes').value || '';
             this.metricas.dataGeracao = new Date().toLocaleString('pt-BR');
 
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            // Atualizar todos os gráficos antes de capturar
+            Object.values(this.charts).forEach(chart => {
+                if (chart && typeof chart.update === 'function') {
+                    chart.update('none');
+                }
+            });
+
+            // Aguardar renderização dos gráficos
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            const { jsPDF } = window.jsPDF || window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
 
             // Configurações do documento
             const pageWidth = doc.internal.pageSize.getWidth();
             const pageHeight = doc.internal.pageSize.getHeight();
-            
-            // Adicionar cabeçalho com informações do relatório
-            doc.setFillColor(52, 144, 219); // Azul
-            doc.rect(0, 0, pageWidth, 35, 'F');
-            
+            const margin = 10;
+            const availableWidth = pageWidth - (margin * 2);
+            let pageNumber = 1;
+            const footerHeight = 15;
+            const headerHeight = 30;
+
+            // Função para adicionar cabeçalho apenas na primeira página
+            const addHeader = (isFirstPage = false) => {
+                if (isFirstPage) {
+                    doc.setFillColor(52, 144, 219);
+                    doc.rect(0, 0, pageWidth, headerHeight, 'F');
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(18);
+                    doc.setFontSize(16);
             doc.setFont('helvetica', 'bold');
-            doc.text('ARGO - Métricas QA', 20, 20);
-            
-            doc.setFontSize(9);
+                    doc.text('ARGO - Métricas QA', margin, 15);
+                    doc.setFontSize(8);
             doc.setFont('helvetica', 'normal');
-            doc.text(`Relatório: ${this.metricas.equipeResponsavel} | ${this.metricas.periodoAnalise} | ${this.metricas.dataGeracao}`, 20, 30);
-            
-            // Capturar tópicos agrupados conforme solicitado
+                    doc.text(`Relatório: ${this.metricas.equipeResponsavel} | ${this.metricas.periodoAnalise} | ${this.metricas.dataGeracao}`, margin, 23);
+                }
+            };
+
+            // Função para capturar uma seção específica
+            const captureSection = async (sectionElement) => {
+                if (!sectionElement) return null;
+
+                try {
+                    // Temporariamente ocultar outras seções e o header do dashboard
+                    const allSections = dashboardElement.querySelectorAll('.dashboard-topic-section');
+                    const dashboardHeader = dashboardElement.querySelector('.dashboard-header');
+                    const hiddenElements = [];
+                    
+                    // Ocultar outras seções
+                    allSections.forEach(section => {
+                        if (section !== sectionElement) {
+                            const originalDisplay = section.style.display;
+                            section.style.display = 'none';
+                            hiddenElements.push({ element: section, display: originalDisplay });
+                        }
+                    });
+
+                    // Ocultar header do dashboard para não aparecer em cada página
+                    if (dashboardHeader) {
+                        const originalDisplay = dashboardHeader.style.display;
+                        dashboardHeader.style.display = 'none';
+                        hiddenElements.push({ element: dashboardHeader, display: originalDisplay });
+                    }
+
+                    // Aguardar renderização inicial
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                    // Forçar atualização dos gráficos dentro desta seção
+                    const chartsInSection = sectionElement.querySelectorAll('canvas');
+                    for (const canvas of chartsInSection) {
+                        // Encontrar o gráfico correspondente
+                        for (const [key, chart] of Object.entries(this.charts)) {
+                            if (chart && chart.canvas === canvas) {
+                                chart.update('none');
+                                // Aguardar renderização individual
+                                await new Promise(resolve => setTimeout(resolve, 200));
+                                break;
+                            }
+                        }
+                    }
+
+                    // Aguardar renderização final dos gráficos
+                    await new Promise(resolve => setTimeout(resolve, 800));
+
+                    // Capturar a seção com melhor qualidade e nitidez
+                    const canvas = await html2canvas(sectionElement, {
+                        backgroundColor: '#ffffff',
+                        scale: 3,
+                        useCORS: true,
+                        logging: false,
+                        allowTaint: true,
+                        windowWidth: sectionElement.scrollWidth,
+                        windowHeight: sectionElement.scrollHeight,
+                        width: sectionElement.scrollWidth,
+                        height: sectionElement.scrollHeight,
+                        pixelRatio: 2,
+                        letterRendering: true,
+                        onclone: (clonedDoc) => {
+                            // Garantir que os estilos CSS sejam aplicados no clone
+                            const style = clonedDoc.createElement('style');
+                            style.textContent = `
+                                .dashboard-topic-header {
+                                    background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%) !important;
+                                    box-shadow: 0 4px 15px rgba(155, 89, 182, 0.2) !important;
+                                    color: white !important;
+                                }
+                                .dashboard-topic-header.falhas,
+                                .dashboard-topic-header.criticas,
+                                .dashboard-topic-header.eficiencia,
+                                .dashboard-topic-header.testes,
+                                .dashboard-topic-header.comparacao {
+                                    background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%) !important;
+                                    box-shadow: 0 4px 15px rgba(155, 89, 182, 0.2) !important;
+                                }
+                                .dashboard-topic-header.resumo {
+                                    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%) !important;
+                                    box-shadow: 0 4px 15px rgba(52, 144, 219, 0.2) !important;
+                                }
+                                .dashboard-topic-header h4 {
+                                    color: white !important;
+                                }
+                                .dashboard-header {
+                                    display: none !important;
+                                }
+                            `;
+                            clonedDoc.head.appendChild(style);
+                            
+                            // Aplicar estilos inline nos headers para garantir renderização
+                            const headers = clonedDoc.querySelectorAll('.dashboard-topic-header');
+                            headers.forEach(header => {
+                                if (header.classList.contains('resumo')) {
+                                    header.style.background = 'linear-gradient(135deg, #3498db 0%, #2980b9 100%)';
+                                } else {
+                                    header.style.background = 'linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%)';
+                                }
+                                header.style.color = 'white';
+                                const h4 = header.querySelector('h4');
+                                if (h4) {
+                                    h4.style.color = 'white';
+                                }
+                            });
+                        }
+                    });
+
+                    // Restaurar visibilidade
+                    hiddenElements.forEach(({ element, display }) => {
+                        element.style.display = display || '';
+                    });
+
+                    return canvas;
+                } catch (error) {
+                    console.error('Erro ao capturar seção:', error);
+                    return null;
+                }
+            };
+
+            // Função para adicionar uma seção ao PDF
+            const addSectionToPDF = async (sectionElement) => {
+                if (!sectionElement) return false;
+
+                const canvas = await captureSection(sectionElement);
+                if (!canvas || canvas.width === 0 || canvas.height === 0) {
+                    console.warn('Canvas vazio para seção:', sectionElement);
+                    return false;
+                }
+
+                const imgData = canvas.toDataURL('image/png', 1.0);
+                const imgWidth = availableWidth;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                // Verificar se precisa de nova página
+                let currentY = pageNumber === 1 ? headerHeight + 5 : 5;
+                const availableHeight = pageHeight - currentY - footerHeight;
+
+                // Se não couber na página atual e não for a primeira página, criar nova página
+                if (imgHeight > availableHeight && pageNumber > 1) {
+                    doc.addPage();
+                    pageNumber++;
+                    currentY = 5;
+                } else if (pageNumber === 1 && currentY === headerHeight + 5) {
+                    // Primeira página já tem cabeçalho
+                }
+
+                // Adicionar imagem mantendo proporção
+                try {
+                    if (imgHeight <= availableHeight) {
+                        // Cabe perfeitamente
+                        doc.addImage(imgData, 'PNG', margin, currentY, imgWidth, imgHeight);
+                    } else {
+                        // Se não couber, ajustar para caber mantendo proporção
+                        const scale = availableHeight / imgHeight;
+                        const scaledHeight = imgHeight * scale;
+                        const scaledWidth = imgWidth * scale;
+                        // Centralizar horizontalmente se necessário
+                        const xOffset = (pageWidth - scaledWidth) / 2;
+                        doc.addImage(imgData, 'PNG', xOffset, currentY, scaledWidth, scaledHeight);
+                    }
+                } catch (error) {
+                    console.error('Erro ao adicionar imagem ao PDF:', error);
+                    return false;
+                }
+
+                // Adicionar rodapé
+                doc.setFontSize(8);
+                doc.setTextColor(128, 128, 128);
+                doc.text(`Página ${pageNumber}`, pageWidth - margin - 10, pageHeight - 5);
+                
+                return true;
+            };
+
             try {
-                const dashboardElement = document.getElementById('dashboard');
-                const margin = 15;
-                const availableWidth = pageWidth - (margin * 2);
-                let pageNumber = 1;
-                const footerHeight = 20;
+                // Adicionar cabeçalho apenas na primeira página
+                addHeader(true);
+
+                // Capturar cada seção do dashboard
+                const sections = dashboardElement.querySelectorAll('.dashboard-topic-section');
+                
+                if (sections.length === 0) {
+                    throw new Error('Nenhuma seção encontrada no dashboard');
+                }
+                
+                for (let i = 0; i < sections.length; i++) {
+                    const section = sections[i];
+                    
+                    // Verificar se precisa de nova página (exceto a primeira)
+                    if (i > 0) {
+                        doc.addPage();
+                        pageNumber++;
+                        // Não adicionar cabeçalho nas páginas seguintes
+                    }
+                    
+                    await addSectionToPDF(section);
+                }
                 
                 // Função auxiliar para coletar elementos de um tópico
                 const collectTopicElements = (topicTitleText) => {
@@ -1222,52 +1651,29 @@ class QADashboardNova {
                     return true;
                 };
                 
-                // Página 1: Falhas durante o Ciclo de Desenvolvimento (sozinho)
-                const falhasElements = collectTopicElements('Falhas durante o Ciclo de Desenvolvimento');
-                await addElementsToPage(falhasElements);
-                
-                // Página 2: Métricas Críticas (inclui Falhas Por Prioridade e Bugs Por Prioridade)
-                const metricasCriticasElements = collectTopicElements('Métricas Críticas');
-                await addElementsToPage(metricasCriticasElements);
-                
-                // Página 3: Métricas de Eficiência + Métricas de Testes + Comparação Métricas VS Metas (juntos)
-                const metricasEficienciaElements = collectTopicElements('Métricas de Eficiência');
-                const metricasTestesElements = collectTopicElements('Métricas de Testes');
-                const comparacaoElements = collectTopicElements('Comparação Métricas VS Metas');
-                const combinedElements2 = [...metricasEficienciaElements, ...metricasTestesElements, ...comparacaoElements];
-                await addElementsToPage(combinedElements2);
-                
-                // Página 4: Resumo de Análise (página exclusiva)
-                const resumoElements = collectTopicElements('Resumo de Análise');
-                // Garantir que não está vazio e adicionar em página exclusiva
-                if (resumoElements && resumoElements.length > 0) {
-                    await addElementsToPage(resumoElements);
-                }
                 
                 // Adicionar observações se houver, em nova página
                 if (this.metricas.observacoes && this.metricas.observacoes.trim()) {
             doc.addPage();
                     pageNumber++;
+                    // Não adicionar cabeçalho azul nas páginas de observações
                     
-                    // Cabeçalho
-                    doc.setFillColor(52, 144, 219);
-                    doc.rect(0, 0, pageWidth, 30, 'F');
-                    doc.setTextColor(255, 255, 255);
+                    // Título
+                    doc.setTextColor(0, 0, 0);
                 doc.setFontSize(14);
                 doc.setFont('helvetica', 'bold');
-                    doc.text('Observações Adicionais', 20, 20);
+                    doc.text('Observações Adicionais', margin, 15);
                     
                     // Conteúdo
-                doc.setTextColor(0, 0, 0);
                 doc.setFontSize(11);
                 doc.setFont('helvetica', 'normal');
-                const splitObservacoes = doc.splitTextToSize(this.metricas.observacoes, pageWidth - 40);
-                    doc.text(splitObservacoes, 20, 45);
+                    const splitObservacoes = doc.splitTextToSize(this.metricas.observacoes, availableWidth);
+                    doc.text(splitObservacoes, margin, 25);
 
             // Rodapé
                     doc.setFontSize(8);
             doc.setTextColor(128, 128, 128);
-                    doc.text(`Página ${pageNumber}`, pageWidth - 40, pageHeight - 10);
+                    doc.text(`Página ${pageNumber}`, pageWidth - margin - 10, pageHeight - 5);
                 }
                 
             } catch (error) {
