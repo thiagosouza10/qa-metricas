@@ -93,6 +93,7 @@ class QADashboardNova {
             testesCriados: parseInt(document.getElementById('testes-criados').value) || 0,
             testesExecutados: parseInt(document.getElementById('testes-executados').value) || 0,
             testesPassaram: parseInt(document.getElementById('testes-passaram').value) || 0,
+            testesAutomatizados: parseInt(document.getElementById('testes-automatizados').value) || 0,
             
             // Informações adicionais
             equipeResponsavel: document.getElementById('equipe-responsavel').value || 'Time QA',
@@ -167,8 +168,7 @@ class QADashboardNova {
         // MTTR (menor é melhor)
         if (this.metricas.mttr <= metas.mttr) score += 1;
 
-        // Taxa de Automação (maior é melhor)
-        if (this.metricas.taxaAutomacao >= metas.taxaAutomacao) score += 1;
+        // Taxa de Automação - não conta para o score (campo permanece apenas para exibição)
 
         // Taxa de Acerto (maior é melhor)
         if (this.metricas.taxaAcerto >= metas.taxaAcerto) score += 1;
@@ -214,9 +214,6 @@ class QADashboardNova {
         if (this.metricas.mttr <= metas.mttr) {
             pontos.push('MTTR dentro do esperado');
         }
-        if (this.metricas.taxaAutomacao >= metas.taxaAutomacao) {
-            pontos.push('Boa taxa de automação');
-        }
         if (this.metricas.taxaAcerto >= metas.taxaAcerto) {
             pontos.push('Excelente taxa de acerto');
         }
@@ -253,9 +250,6 @@ class QADashboardNova {
         }
         if (this.metricas.mttr > metas.mttr) {
             pontos.push('MTTR acima do esperado');
-        }
-        if (this.metricas.taxaAutomacao < metas.taxaAutomacao) {
-            pontos.push('Taxa de automação abaixo da meta');
         }
         if (this.metricas.taxaAcerto < metas.taxaAcerto) {
             pontos.push('Taxa de acerto abaixo da meta');
@@ -342,6 +336,8 @@ class QADashboardNova {
         // Métricas de Testes
         document.getElementById('testes-criados-valor').textContent = this.metricas.testesCriados;
         document.getElementById('testes-executados-valor').textContent = this.metricas.testesExecutados;
+        document.getElementById('testes-passaram-valor').textContent = this.metricas.testesPassaram;
+        document.getElementById('testes-automatizados-valor').textContent = this.metricas.testesAutomatizados;
         document.getElementById('taxa-sucesso-testes-valor').textContent = `${this.metricas.taxaSucessoTestes.toFixed(1)}%`;
 
         // Atualizar status geral
@@ -610,16 +606,16 @@ class QADashboardNova {
             this.charts.metas = new Chart(ctxMetas, {
                 type: 'bar',
                 data: {
-                    labels: ['Taxa Escape', 'MTTR', 'Automação', 'Acerto', 'Aceitação de Histórias', 'Sucesso Testes'],
+                    labels: ['Taxa Escape', 'MTTR', 'Acerto', 'Aceitação de Histórias', 'Sucesso Testes'],
                     datasets: [{
                         label: 'Atual',
-                        data: [3.2, 6.2, 72.3, 85.7, 90, 90.5],
+                        data: [3.2, 6.2, 85.7, 90, 90.5],
                         backgroundColor: '#3498db',
                         borderColor: '#2980b9',
                         borderWidth: 1
                     }, {
                         label: 'Meta',
-                        data: [5, 8, 70, 85, 90, 90],
+                        data: [5, 8, 85, 90, 90],
                         backgroundColor: '#95a5a6',
                         borderColor: '#7f8c8d',
                         borderWidth: 1
@@ -839,7 +835,6 @@ class QADashboardNova {
             this.charts.metas.data.datasets[0].data = [
                 this.metricas.taxaEscape,
                 this.metricas.mttr,
-                this.metricas.taxaAutomacao,
                 this.metricas.taxaAcerto,
                 aceitacaoHistorias,
                 taxaSucessoTestes
@@ -848,7 +843,6 @@ class QADashboardNova {
             this.charts.metas.data.datasets[1].data = [
                 5,  // Taxa Escape meta
                 8,  // MTTR meta
-                70, // Automação meta
                 85, // Acerto meta
                 90, // Aceitação meta
                 90  // Sucesso Testes meta
