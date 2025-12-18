@@ -754,17 +754,13 @@ class QADashboardNova {
                         data: [3.2, 6.2, 85.7, 90, 90.5],
                         backgroundColor: '#3498db',
                         borderColor: '#2980b9',
-                        borderWidth: 1,
-                        barThickness: 'flex',
-                        maxBarThickness: 40
+                        borderWidth: 1
                     }, {
                         label: 'Meta',
                         data: [5, 16, 85, 90, 90],
                         backgroundColor: '#95a5a6',
                         borderColor: '#7f8c8d',
-                        borderWidth: 1,
-                        barThickness: 'flex',
-                        maxBarThickness: 40
+                        borderWidth: 1
                     }]
                 },
                 options: {
@@ -783,15 +779,20 @@ class QADashboardNova {
                             beginAtZero: true,
                             max: 100,
                             ticks: {
-                                padding: 10
+                                padding: 10,
+                                stepSize: 20
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
                             }
                         },
                         x: {
                             ticks: {
                                 padding: 15
                             },
-                            categoryPercentage: 0.4,
-                            barPercentage: 0.5
+                            grid: {
+                                display: false
+                            }
                         }
                     },
                     plugins: {
@@ -799,7 +800,7 @@ class QADashboardNova {
                             position: 'top',
                             padding: {
                                 top: 0,
-                                bottom: 45
+                                bottom: 50
                             },
                             labels: {
                                 boxWidth: 12,
@@ -818,12 +819,13 @@ class QADashboardNova {
                             formatter: function(value, context) {
                                 if (value <= 0) return '';
                                 const label = context.chart.data.labels[context.dataIndex];
-                                // MTTR deve ser exibido em horas
+                                let formattedValue = value.toFixed(2);
+                                // Remove zeros desnecessários no final
+                                formattedValue = parseFloat(formattedValue).toString();
                                 if (label === 'MTTR') {
-                                    return value.toFixed(1) + 'h';
+                                    return formattedValue + 'h';
                                 }
-                                // Todos os outros são porcentagem
-                                return value.toFixed(1) + '%';
+                                return formattedValue + '%';
                             },
                             padding: {
                                 top: 5
@@ -1618,13 +1620,70 @@ class QADashboardNova {
                 
                 for (let i = 0; i < sections.length; i++) {
                     const section = sections[i];
+                    const nextSection = i < sections.length - 1 ? sections[i + 1] : null;
                     
-                    // Adicionar nova página para cada seção (sem cabeçalho)
+                    // Verificar se é a seção de Comparação e a próxima é Resumo
+                    const isComparacao = section.querySelector('.dashboard-topic-header.comparacao');
+                    const isResumo = nextSection && nextSection.querySelector('.dashboard-topic-header.resumo');
+                    
+                    if (isComparacao && isResumo) {
+                        // Combinar Comparação e Resumo na mesma página
                         doc.addPage();
                         pageNumber++;
-                    
-                    // Adicionar seção começando do topo (sem cabeçalho)
-                    await addSectionToPDF(section, 10);
+                        
+                        // Adicionar seção de Comparação
+                        let currentY = 10;
+                        const comparacaoCanvas = await captureSection(section);
+                        if (comparacaoCanvas && comparacaoCanvas.width > 0 && comparacaoCanvas.height > 0) {
+                            const comparacaoImgData = comparacaoCanvas.toDataURL('image/jpeg', 0.75);
+                            const comparacaoImgWidth = availableWidth;
+                            const comparacaoImgHeight = (comparacaoCanvas.height * comparacaoImgWidth) / comparacaoCanvas.width;
+                            
+                            // Ajustar altura se necessário para caber na metade superior
+                            const maxComparacaoHeight = (pageHeight - currentY - footerHeight) * 0.5;
+                            let finalComparacaoHeight = comparacaoImgHeight;
+                            let finalComparacaoWidth = comparacaoImgWidth;
+                            
+                            if (comparacaoImgHeight > maxComparacaoHeight) {
+                                const scale = maxComparacaoHeight / comparacaoImgHeight;
+                                finalComparacaoHeight = comparacaoImgHeight * scale;
+                                finalComparacaoWidth = comparacaoImgWidth * scale;
+                            }
+                            
+                            doc.addImage(comparacaoImgData, 'JPEG', margin, currentY, finalComparacaoWidth, finalComparacaoHeight);
+                            currentY += finalComparacaoHeight + 10;
+                        }
+                        
+                        // Adicionar seção de Resumo na mesma página
+                        const resumoCanvas = await captureSection(nextSection);
+                        if (resumoCanvas && resumoCanvas.width > 0 && resumoCanvas.height > 0) {
+                            const resumoImgData = resumoCanvas.toDataURL('image/jpeg', 0.75);
+                            const resumoImgWidth = availableWidth;
+                            const resumoImgHeight = (resumoCanvas.height * resumoImgWidth) / resumoCanvas.width;
+                            
+                            const availableHeight = pageHeight - currentY - footerHeight;
+                            let finalResumoHeight = resumoImgHeight;
+                            let finalResumoWidth = resumoImgWidth;
+                            
+                            if (resumoImgHeight > availableHeight) {
+                                const scale = availableHeight / resumoImgHeight;
+                                finalResumoHeight = resumoImgHeight * scale;
+                                finalResumoWidth = resumoImgWidth * scale;
+                            }
+                            
+                            doc.addImage(resumoImgData, 'JPEG', margin, currentY, finalResumoWidth, finalResumoHeight);
+                        }
+                        
+                        // Pular a próxima seção (Resumo) pois já foi adicionada
+                        i++;
+                    } else {
+                        // Adicionar nova página para cada seção (sem cabeçalho)
+                        doc.addPage();
+                        pageNumber++;
+                        
+                        // Adicionar seção começando do topo (sem cabeçalho)
+                        await addSectionToPDF(section, 10);
+                    }
                 }
                 
                 // Função auxiliar para coletar elementos de um tópico
