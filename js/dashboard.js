@@ -754,27 +754,57 @@ class QADashboardNova {
                         data: [3.2, 6.2, 85.7, 90, 90.5],
                         backgroundColor: '#3498db',
                         borderColor: '#2980b9',
-                        borderWidth: 1
+                        borderWidth: 1,
+                        barThickness: 'flex',
+                        maxBarThickness: 40
                     }, {
                         label: 'Meta',
                         data: [5, 16, 85, 90, 90],
                         backgroundColor: '#95a5a6',
                         borderColor: '#7f8c8d',
-                        borderWidth: 1
+                        borderWidth: 1,
+                        barThickness: 'flex',
+                        maxBarThickness: 40
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    layout: {
+                        padding: {
+                            top: 10,
+                            right: 20,
+                            bottom: 20,
+                            left: 20
+                        }
+                    },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            max: 100
+                            max: 100,
+                            ticks: {
+                                padding: 10
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                padding: 15
+                            },
+                            categoryPercentage: 0.4,
+                            barPercentage: 0.5
                         }
                     },
                     plugins: {
                         legend: {
-                            position: 'top'
+                            position: 'top',
+                            padding: {
+                                top: 0,
+                                bottom: 45
+                            },
+                            labels: {
+                                boxWidth: 12,
+                                padding: 15
+                            }
                         },
                         datalabels: {
                             anchor: 'end',
@@ -796,7 +826,7 @@ class QADashboardNova {
                                 return value.toFixed(1) + '%';
                             },
                             padding: {
-                                top: 3
+                                top: 5
                             }
                         }
                     }
@@ -1195,21 +1225,196 @@ class QADashboardNova {
             const availableWidth = pageWidth - (margin * 2);
             let pageNumber = 1;
             const footerHeight = 15;
-            const headerHeight = 30;
 
-            // Função para adicionar cabeçalho apenas na primeira página
-            const addHeader = (isFirstPage = false) => {
-                if (isFirstPage) {
-                    doc.setFillColor(52, 144, 219);
-                    doc.rect(0, 0, pageWidth, headerHeight, 'F');
-            doc.setTextColor(255, 255, 255);
-                    doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-                    doc.text('ARGO - Métricas QA', margin, 15);
-                    doc.setFontSize(8);
-            doc.setFont('helvetica', 'normal');
-                    doc.text(`Relatório: ${this.metricas.equipeResponsavel} | ${this.metricas.periodoAnalise} | ${this.metricas.dataGeracao}`, margin, 23);
+            // Função para obter cor do status
+            const getStatusColor = (status) => {
+                const statusUpper = (status || 'BOM').toUpperCase();
+                switch(statusUpper) {
+                    case 'EXCELENTE': return [39, 174, 96]; // Verde
+                    case 'BOM': return [52, 144, 219]; // Azul
+                    case 'ATENCAO': case 'ATENÇÃO': return [243, 156, 18]; // Amarelo
+                    case 'CRITICO': case 'CRÍTICO': return [231, 76, 60]; // Vermelho
+                    default: return [52, 144, 219]; // Azul padrão
                 }
+            };
+
+            // Função para adicionar cabeçalho do dashboard similar à tela
+            const addDashboardHeader = (yPosition = 10) => {
+                const headerHeight = 35;
+                const headerY = yPosition;
+                
+                // Fundo cinza escuro do header
+                doc.setFillColor(108, 117, 125);
+                doc.rect(margin, headerY, availableWidth, headerHeight, 'F');
+                
+                // Título à esquerda
+            doc.setTextColor(255, 255, 255);
+                doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+                doc.text('Dashboard de Métricas QA', margin + 5, headerY + 12);
+                
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(255, 255, 255);
+                doc.text('Métricas essenciais para evolução das squads', margin + 5, headerY + 20);
+                
+                // Score card à direita
+                const scoreCardX = pageWidth - margin - 70;
+                const scoreCardY = headerY + 5;
+                const scoreCardWidth = 65;
+                const scoreCardHeight = 25;
+                
+                // Fundo do score card (cinza claro)
+                doc.setFillColor(240, 240, 240);
+                doc.rect(scoreCardX, scoreCardY, scoreCardWidth, scoreCardHeight, 'F');
+                
+                // Borda do score card
+                doc.setDrawColor(200, 200, 200);
+                doc.setLineWidth(0.5);
+                doc.rect(scoreCardX, scoreCardY, scoreCardWidth, scoreCardHeight, 'S');
+                
+                // Texto "SCORE GERAL"
+                doc.setFontSize(7);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(100, 100, 100);
+                doc.text('SCORE GERAL', scoreCardX + scoreCardWidth / 2, scoreCardY + 6, { align: 'center' });
+                
+                // Badge do status
+                const statusGeral = this.metricas.statusGeral || 'BOM';
+                const statusColor = getStatusColor(statusGeral);
+                const badgeY = scoreCardY + 12;
+                const badgeWidth = 40;
+                const badgeHeight = 8;
+                
+                doc.setFillColor(statusColor[0], statusColor[1], statusColor[2]);
+                doc.rect(scoreCardX + (scoreCardWidth - badgeWidth) / 2, badgeY, badgeWidth, badgeHeight, 'F');
+                
+                    doc.setFontSize(8);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(255, 255, 255);
+                doc.text(statusGeral.toUpperCase(), scoreCardX + scoreCardWidth / 2, badgeY + 5.5, { align: 'center' });
+                
+                // Data
+                doc.setFontSize(6);
+            doc.setFont('helvetica', 'normal');
+                doc.setTextColor(120, 120, 120);
+                doc.text(this.metricas.dataGeracao || new Date().toLocaleString('pt-BR'), scoreCardX + scoreCardWidth / 2, scoreCardY + 22, { align: 'center' });
+                
+                return headerY + headerHeight + 10;
+            };
+
+            // Função para adicionar página de informações do relatório
+            const addRelatorioInfoPage = () => {
+                // Adicionar cabeçalho apenas na primeira página
+                let currentY = addDashboardHeader(10);
+                currentY += 5; // Espaçamento após cabeçalho
+                
+                // Título da seção com estilo mais elegante
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(44, 62, 80);
+                doc.text('Informações do Relatório', margin, currentY);
+                currentY += 8;
+                
+                // Linha divisória mais sutil
+                doc.setDrawColor(220, 220, 220);
+                doc.setLineWidth(0.3);
+                doc.line(margin, currentY, pageWidth - margin, currentY);
+                currentY += 10;
+                
+                // Card para Equipe Responsável
+                const cardHeight = 12;
+                doc.setFillColor(248, 249, 250);
+                doc.rect(margin, currentY, availableWidth, cardHeight, 'F');
+                doc.setDrawColor(230, 230, 230);
+                doc.setLineWidth(0.3);
+                doc.rect(margin, currentY, availableWidth, cardHeight, 'S');
+                
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(108, 117, 125);
+                doc.text('Equipe Responsável', margin + 5, currentY + 5);
+                
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(0, 0, 0);
+                const equipeText = this.metricas.equipeResponsavel || 'Não informado';
+                doc.text(equipeText, margin + 5, currentY + 9);
+                currentY += cardHeight + 8;
+                
+                // Card para Período de Análise
+                doc.setFillColor(248, 249, 250);
+                doc.rect(margin, currentY, availableWidth, cardHeight, 'F');
+                doc.setDrawColor(230, 230, 230);
+                doc.setLineWidth(0.3);
+                doc.rect(margin, currentY, availableWidth, cardHeight, 'S');
+                
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(108, 117, 125);
+                doc.text('Período de Análise', margin + 5, currentY + 5);
+                
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(0, 0, 0);
+                const periodoText = this.metricas.periodoAnalise || 'Não informado';
+                doc.text(periodoText, margin + 5, currentY + 9);
+                currentY += cardHeight + 8;
+                
+                // Card para Observações
+                const observacoesCardHeight = 30;
+                doc.setFillColor(248, 249, 250);
+                doc.rect(margin, currentY, availableWidth, observacoesCardHeight, 'F');
+                doc.setDrawColor(230, 230, 230);
+                doc.setLineWidth(0.3);
+                doc.rect(margin, currentY, availableWidth, observacoesCardHeight, 'S');
+                
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(108, 117, 125);
+                doc.text('Observações Adicionais', margin + 5, currentY + 5);
+                
+                if (this.metricas.observacoes && this.metricas.observacoes.trim()) {
+                    doc.setFontSize(9);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(0, 0, 0);
+                    const observacoesLines = doc.splitTextToSize(this.metricas.observacoes, availableWidth - 15);
+                    let textY = currentY + 10;
+                    observacoesLines.forEach(line => {
+                        if (textY > currentY + observacoesCardHeight - 3) {
+                            // Se não couber, criar nova página
+                            doc.addPage();
+                            pageNumber++;
+                            textY = 20;
+                            // Redesenhar card na nova página
+                            doc.setFillColor(248, 249, 250);
+                            doc.rect(margin, textY - 10, availableWidth, observacoesCardHeight, 'F');
+                            doc.setDrawColor(230, 230, 230);
+                            doc.setLineWidth(0.3);
+                            doc.rect(margin, textY - 10, availableWidth, observacoesCardHeight, 'S');
+                            doc.setFontSize(9);
+                            doc.setFont('helvetica', 'bold');
+                            doc.setTextColor(108, 117, 125);
+                            doc.text('Observações Adicionais (continuação)', margin + 5, textY - 5);
+                            textY += 5;
+                        }
+                        doc.setFontSize(9);
+                        doc.setFont('helvetica', 'normal');
+                        doc.setTextColor(0, 0, 0);
+                        doc.text(line, margin + 5, textY);
+                        textY += 4.5;
+                    });
+                } else {
+                    doc.setFontSize(9);
+                    doc.setFont('helvetica', 'italic');
+                    doc.setTextColor(150, 150, 150);
+                    doc.text('Nenhuma observação adicional informada.', margin + 5, currentY + 10);
+                }
+                
+                // Rodapé
+                doc.setFontSize(8);
+                doc.setTextColor(128, 128, 128);
+                doc.text(`Página ${pageNumber}`, pageWidth - margin - 10, pageHeight - 5);
             };
 
             // Função para capturar uma seção específica
@@ -1276,24 +1481,38 @@ class QADashboardNova {
                             const style = clonedDoc.createElement('style');
                             style.textContent = `
                                 .dashboard-topic-header {
-                                    background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%) !important;
-                                    box-shadow: 0 4px 15px rgba(155, 89, 182, 0.2) !important;
-                                    color: white !important;
+                                    background: #e9ecef !important;
+                                    color: #2c3e50 !important;
+                                    border: 3px solid #667eea !important;
                                 }
                                 .dashboard-topic-header.falhas,
-                                .dashboard-topic-header.criticas,
+                                .dashboard-topic-header.criticas {
+                                    background: #e9ecef !important;
+                                    color: #2c3e50 !important;
+                                    border-color: #dc3545 !important;
+                                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+                                }
                                 .dashboard-topic-header.eficiencia,
-                                .dashboard-topic-header.testes,
+                                .dashboard-topic-header.testes {
+                                    background: #e9ecef !important;
+                                    color: #2c3e50 !important;
+                                    border-color: #198754 !important;
+                                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+                                }
                                 .dashboard-topic-header.comparacao {
-                                    background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%) !important;
-                                    box-shadow: 0 4px 15px rgba(155, 89, 182, 0.2) !important;
+                                    background: #e9ecef !important;
+                                    color: #2c3e50 !important;
+                                    border-color: #ffc107 !important;
+                                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
                                 }
                                 .dashboard-topic-header.resumo {
-                                    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%) !important;
-                                    box-shadow: 0 4px 15px rgba(52, 144, 219, 0.2) !important;
+                                    background: #e9ecef !important;
+                                    color: #2c3e50 !important;
+                                    border-color: #3498db !important;
+                                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
                                 }
                                 .dashboard-topic-header h4 {
-                                    color: white !important;
+                                    color: #2c3e50 !important;
                                 }
                                 .dashboard-header {
                                     display: none !important;
@@ -1304,15 +1523,25 @@ class QADashboardNova {
                             // Aplicar estilos inline nos headers para garantir renderização
                             const headers = clonedDoc.querySelectorAll('.dashboard-topic-header');
                             headers.forEach(header => {
+                                header.style.background = '#e9ecef';
+                                header.style.color = '#2c3e50';
+                                header.style.border = '3px solid';
+                                
                                 if (header.classList.contains('resumo')) {
-                                    header.style.background = 'linear-gradient(135deg, #3498db 0%, #2980b9 100%)';
+                                    header.style.borderColor = '#3498db';
+                                } else if (header.classList.contains('falhas') || header.classList.contains('criticas')) {
+                                    header.style.borderColor = '#dc3545';
+                                } else if (header.classList.contains('eficiencia') || header.classList.contains('testes')) {
+                                    header.style.borderColor = '#198754';
+                                } else if (header.classList.contains('comparacao')) {
+                                    header.style.borderColor = '#ffc107';
                                 } else {
-                                    header.style.background = 'linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%)';
+                                    header.style.borderColor = '#667eea';
                                 }
-                                header.style.color = 'white';
+                                
                                 const h4 = header.querySelector('h4');
                                 if (h4) {
-                                    h4.style.color = 'white';
+                                    h4.style.color = '#2c3e50';
                                 }
                             });
                         }
@@ -1331,7 +1560,7 @@ class QADashboardNova {
             };
 
             // Função para adicionar uma seção ao PDF
-            const addSectionToPDF = async (sectionElement) => {
+            const addSectionToPDF = async (sectionElement, startY = 50) => {
                 if (!sectionElement) return false;
 
                 const canvas = await captureSection(sectionElement);
@@ -1345,18 +1574,9 @@ class QADashboardNova {
                 const imgWidth = availableWidth;
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-                // Verificar se precisa de nova página
-                let currentY = pageNumber === 1 ? headerHeight + 5 : 5;
+                // Posição Y inicial (após o cabeçalho do dashboard)
+                let currentY = startY;
                 const availableHeight = pageHeight - currentY - footerHeight;
-
-                // Se não couber na página atual e não for a primeira página, criar nova página
-                if (imgHeight > availableHeight && pageNumber > 1) {
-                    doc.addPage();
-                    pageNumber++;
-                    currentY = 5;
-                } else if (pageNumber === 1 && currentY === headerHeight + 5) {
-                    // Primeira página já tem cabeçalho
-                }
 
                 // Adicionar imagem mantendo proporção
                 try {
@@ -1386,8 +1606,8 @@ class QADashboardNova {
             };
 
             try {
-                // Adicionar cabeçalho apenas na primeira página
-                addHeader(true);
+                // Adicionar página de informações do relatório na primeira página
+                addRelatorioInfoPage();
 
                 // Capturar cada seção do dashboard
                 const sections = dashboardElement.querySelectorAll('.dashboard-topic-section');
@@ -1399,14 +1619,12 @@ class QADashboardNova {
                 for (let i = 0; i < sections.length; i++) {
                     const section = sections[i];
                     
-                    // Verificar se precisa de nova página (exceto a primeira)
-                    if (i > 0) {
+                    // Adicionar nova página para cada seção (sem cabeçalho)
                         doc.addPage();
                         pageNumber++;
-                        // Não adicionar cabeçalho nas páginas seguintes
-                    }
                     
-                    await addSectionToPDF(section);
+                    // Adicionar seção começando do topo (sem cabeçalho)
+                    await addSectionToPDF(section, 10);
                 }
                 
                 // Função auxiliar para coletar elementos de um tópico
@@ -1494,7 +1712,7 @@ class QADashboardNova {
                     
                     // Adicionar cabeçalho do relatório na primeira página
                     if (pageNumber === 1) {
-                        doc.setFillColor(52, 144, 219);
+                        doc.setFillColor(108, 117, 125);
                         doc.rect(0, 0, pageWidth, 35, 'F');
                         doc.setTextColor(255, 255, 255);
             doc.setFontSize(18);
@@ -1674,59 +1892,32 @@ class QADashboardNova {
                     return true;
                 };
                 
-                
-                // Adicionar observações se houver, em nova página
-                if (this.metricas.observacoes && this.metricas.observacoes.trim()) {
-            doc.addPage();
-                    pageNumber++;
-                    // Não adicionar cabeçalho azul nas páginas de observações
-                    
-                    // Título
-                    doc.setTextColor(0, 0, 0);
-                doc.setFontSize(14);
-                doc.setFont('helvetica', 'bold');
-                    doc.text('Observações Adicionais', margin, 15);
-                    
-                    // Conteúdo
-                doc.setFontSize(11);
-                doc.setFont('helvetica', 'normal');
-                    const splitObservacoes = doc.splitTextToSize(this.metricas.observacoes, availableWidth);
-                    doc.text(splitObservacoes, margin, 25);
-
-            // Rodapé
-                    doc.setFontSize(8);
-            doc.setTextColor(128, 128, 128);
-                    doc.text(`Página ${pageNumber}`, pageWidth - margin - 10, pageHeight - 5);
-                }
-                
             } catch (error) {
                 console.error('Erro ao capturar dashboard:', error);
                 // Fallback: adicionar página com mensagem de erro
                 try {
                     if (pageNumber === 1) {
-                        doc.setFillColor(52, 144, 219);
-                        doc.rect(0, 0, pageWidth, 35, 'F');
-                        doc.setTextColor(255, 255, 255);
-                        doc.setFontSize(18);
-                        doc.setFont('helvetica', 'bold');
-                        doc.text('ARGO - Métricas QA', 20, 20);
-                        doc.setFontSize(9);
-                        doc.setFont('helvetica', 'normal');
-                        doc.text(`Relatório: ${this.metricas.equipeResponsavel} | ${this.metricas.periodoAnalise} | ${this.metricas.dataGeracao}`, 20, 30);
+                        addDashboardHeader(10);
                     } else {
                         doc.addPage();
+                        pageNumber++;
+                        addDashboardHeader(10);
                     }
+                    let errorY = 60;
                     doc.setFontSize(12);
                     doc.setTextColor(231, 76, 60);
                     doc.setFont('helvetica', 'bold');
-                    doc.text('Erro ao capturar dashboard', 20, 50);
+                    doc.text('Erro ao capturar dashboard', margin, errorY);
+                    errorY += 10;
                     doc.setFontSize(10);
                     doc.setFont('helvetica', 'normal');
                     doc.setTextColor(0, 0, 0);
-                    doc.text('Ocorreu um erro ao gerar o PDF. Detalhes:', 20, 70);
-                    const errorText = doc.splitTextToSize(error.message || 'Erro desconhecido', pageWidth - 40);
-                    doc.text(errorText, 20, 85);
-                    doc.text('Por favor, tente novamente ou entre em contato com o suporte.', 20, 120);
+                    doc.text('Ocorreu um erro ao gerar o PDF. Detalhes:', margin, errorY);
+                    errorY += 8;
+                    const errorText = doc.splitTextToSize(error.message || 'Erro desconhecido', availableWidth);
+                    doc.text(errorText, margin, errorY);
+                    errorY += errorText.length * 5 + 5;
+                    doc.text('Por favor, tente novamente ou entre em contato com o suporte.', margin, errorY);
                 } catch (fallbackError) {
                     console.error('Erro no fallback:', fallbackError);
                 }
@@ -1798,12 +1989,12 @@ class QADashboardNova {
     drawMetricCardPDF(doc, x, y, title, value, meta, color) {
         // Card background
         doc.setFillColor(248, 249, 250);
-        doc.roundedRect(x, y, 80, 38, 3, 3, 'F');
+        doc.rect(x, y, 80, 38, 'F');
         
         // Border com cor sutil
         doc.setDrawColor(220, 220, 220);
         doc.setLineWidth(0.3);
-        doc.roundedRect(x, y, 80, 38, 3, 3);
+        doc.rect(x, y, 80, 38, 'S');
         
         // Title
         doc.setTextColor(0, 0, 0);
