@@ -3,6 +3,12 @@
  * Funcionalidades para entrada de dados, cálculo de métricas e geração de relatórios
  */
 
+// Usar módulos globais se disponíveis (carregados via script tags)
+// Os módulos se disponibilizam globalmente via window.DataCollector, etc.
+const DataCollector = window.DataCollector;
+const MetricsCalculator = window.MetricsCalculator;
+const AnalysisGenerator = window.AnalysisGenerator;
+
 class QADashboardNova {
     constructor() {
         this.metricas = {};
@@ -45,62 +51,46 @@ class QADashboardNova {
     }
 
     calcularMetricas() {
-        // Coletar dados do formulário - Falhas durante o ciclo de Desenvolvimento
-        this.metricas = {
-            // Falhas durante o ciclo de Desenvolvimento
-            falhaRequisito: parseInt(document.getElementById('falha-requisito').value) || 0,
-            falhaManualPreRelease: parseInt(document.getElementById('falha-manual-pre-release').value) || 0,
-            falhaAutomatizadaPreRelease: parseInt(document.getElementById('falha-automatizada-pre-release').value) || 0,
-            falhaManualRelease: parseInt(document.getElementById('falha-manual-release').value) || 0,
-            falhaAutomatizadaRelease: parseInt(document.getElementById('falha-automatizada-release').value) || 0,
-            falhaProducao: parseInt(document.getElementById('falha-producao').value) || 0,
-            
-            // Taxa de Escape
-            taxaEscape: parseFloat(document.getElementById('taxa-escape').value) || 0,
-            
-            // MTTR
-            mttr: parseFloat(document.getElementById('mttr').value) || 0,
-            
-            // Aceitação de História de Usuário
-            historiasTotais: parseInt(document.getElementById('historias-totais').value) || 0,
-            historiasAceitas: parseInt(document.getElementById('historias-aceitas').value) || 0,
-            
-            // Taxa de Automação
-            taxaAutomacao: parseFloat(document.getElementById('taxa-automacao').value) || 0,
-            
-            // Taxa de Acerto
-            taxaAcerto: parseFloat(document.getElementById('taxa-acerto').value) || 0,
-            
-            // Defects vs Bugs
-            defectsAbertos: parseInt(document.getElementById('defeitos-abertos').value) || 0,
-            defectsFechados: parseInt(document.getElementById('defeitos-fechados').value) || 0,
-            bugsAbertos: parseInt(document.getElementById('bugs-abertos').value) || 0,
-            bugsFechados: parseInt(document.getElementById('bugs-fechados').value) || 0,
-            
-            // Falhas Por Prioridade
-            falhaPrioridadeTrivial: parseInt(document.getElementById('falha-prioridade-trivial').value) || 0,
-            falhaPrioridadeMedia: parseInt(document.getElementById('falha-prioridade-media').value) || 0,
-            falhaPrioridadeGravissima: parseInt(document.getElementById('falha-prioridade-gravissima').value) || 0,
-            falhaPrioridadeCritica: parseInt(document.getElementById('falha-prioridade-critica').value) || 0,
-            
-            // Bugs Por Prioridade
-            bugPrioridadeTrivial: parseInt(document.getElementById('bug-prioridade-trivial').value) || 0,
-            bugPrioridadeMedia: parseInt(document.getElementById('bug-prioridade-media').value) || 0,
-            bugPrioridadeGravissima: parseInt(document.getElementById('bug-prioridade-gravissima').value) || 0,
-            bugPrioridadeCritica: parseInt(document.getElementById('bug-prioridade-critica').value) || 0,
-            
-            // Métricas de Testes
-            testesCriados: parseInt(document.getElementById('testes-criados').value) || 0,
-            testesExecutados: parseInt(document.getElementById('testes-executados').value) || 0,
-            testesPassaram: parseInt(document.getElementById('testes-passaram').value) || 0,
-            testesAutomatizados: parseInt(document.getElementById('testes-automatizados').value) || 0,
-            
-            // Informações adicionais
-            equipeResponsavel: document.getElementById('equipe-responsavel').value || 'Time QA',
-            periodoAnalise: document.getElementById('periodo-analise').value || 'Últimos 30 dias',
-            observacoes: document.getElementById('observacoes').value || '',
-            dataGeracao: new Date().toLocaleString('pt-BR')
-        };
+        // Coletar dados do formulário usando DataCollector se disponível, senão usar implementação inline
+        if (DataCollector && typeof DataCollector.collectFormData === 'function') {
+            this.metricas = DataCollector.collectFormData();
+        } else {
+            // Fallback: implementação inline original
+            this.metricas = {
+                falhaRequisito: parseInt(document.getElementById('falha-requisito').value) || 0,
+                falhaManualPreRelease: parseInt(document.getElementById('falha-manual-pre-release').value) || 0,
+                falhaAutomatizadaPreRelease: parseInt(document.getElementById('falha-automatizada-pre-release').value) || 0,
+                falhaManualRelease: parseInt(document.getElementById('falha-manual-release').value) || 0,
+                falhaAutomatizadaRelease: parseInt(document.getElementById('falha-automatizada-release').value) || 0,
+                falhaProducao: parseInt(document.getElementById('falha-producao').value) || 0,
+                taxaEscape: parseFloat(document.getElementById('taxa-escape').value) || 0,
+                mttr: parseFloat(document.getElementById('mttr').value) || 0,
+                historiasTotais: parseInt(document.getElementById('historias-totais').value) || 0,
+                historiasAceitas: parseInt(document.getElementById('historias-aceitas').value) || 0,
+                taxaAutomacao: parseFloat(document.getElementById('taxa-automacao').value) || 0,
+                taxaAcerto: parseFloat(document.getElementById('taxa-acerto').value) || 0,
+                defectsAbertos: parseInt(document.getElementById('defeitos-abertos').value) || 0,
+                defectsFechados: parseInt(document.getElementById('defeitos-fechados').value) || 0,
+                bugsAbertos: parseInt(document.getElementById('bugs-abertos').value) || 0,
+                bugsFechados: parseInt(document.getElementById('bugs-fechados').value) || 0,
+                falhaPrioridadeTrivial: parseInt(document.getElementById('falha-prioridade-trivial').value) || 0,
+                falhaPrioridadeMedia: parseInt(document.getElementById('falha-prioridade-media').value) || 0,
+                falhaPrioridadeGravissima: parseInt(document.getElementById('falha-prioridade-gravissima').value) || 0,
+                falhaPrioridadeCritica: parseInt(document.getElementById('falha-prioridade-critica').value) || 0,
+                bugPrioridadeTrivial: parseInt(document.getElementById('bug-prioridade-trivial').value) || 0,
+                bugPrioridadeMedia: parseInt(document.getElementById('bug-prioridade-media').value) || 0,
+                bugPrioridadeGravissima: parseInt(document.getElementById('bug-prioridade-gravissima').value) || 0,
+                bugPrioridadeCritica: parseInt(document.getElementById('bug-prioridade-critica').value) || 0,
+                testesCriados: parseInt(document.getElementById('testes-criados').value) || 0,
+                testesExecutados: parseInt(document.getElementById('testes-executados').value) || 0,
+                testesPassaram: parseInt(document.getElementById('testes-passaram').value) || 0,
+                testesAutomatizados: parseInt(document.getElementById('testes-automatizados').value) || 0,
+                equipeResponsavel: document.getElementById('equipe-responsavel')?.value || 'Time QA',
+                periodoAnalise: document.getElementById('periodo-analise')?.value || 'Últimos 30 dias',
+                observacoes: document.getElementById('observacoes')?.value || '',
+                dataGeracao: new Date().toLocaleString('pt-BR')
+            };
+        }
 
         // Calcular métricas derivadas
         this.calcularMetricasDerivadas();
@@ -116,45 +106,58 @@ class QADashboardNova {
     }
 
     calcularMetricasDerivadas() {
-        // Calcular total de falhas
-        this.metricas.totalFalhas = 
-            this.metricas.falhaRequisito +
-            this.metricas.falhaManualPreRelease +
-            this.metricas.falhaAutomatizadaPreRelease +
-            this.metricas.falhaManualRelease +
-            this.metricas.falhaAutomatizadaRelease +
-            this.metricas.falhaProducao;
+        // Usar MetricsCalculator se disponível, senão usar implementação inline
+        if (MetricsCalculator && typeof MetricsCalculator.calculateDerivedMetrics === 'function') {
+            this.metricas = MetricsCalculator.calculateDerivedMetrics(this.metricas);
+            this.metricas.statusAceitacaoHistorias = MetricsCalculator.classifyAceitacaoHistorias(this.metricas.aceitacaoHistorias);
+            this.metricas.statusGeral = MetricsCalculator.classifyStatus(MetricsCalculator.calculateScore(this.metricas));
+        } else {
+            // Fallback: implementação inline original
+            this.metricas.totalFalhas = 
+                this.metricas.falhaRequisito +
+                this.metricas.falhaManualPreRelease +
+                this.metricas.falhaAutomatizadaPreRelease +
+                this.metricas.falhaManualRelease +
+                this.metricas.falhaAutomatizadaRelease +
+                this.metricas.falhaProducao;
 
-        const { bugsAbertos, bugsFechados, defectsAbertos, defectsFechados } = this.metricas;
-        const totalBugs = bugsAbertos + bugsFechados;
-        const totalDefects = defectsAbertos + defectsFechados;
+            const { bugsAbertos, bugsFechados, defectsAbertos, defectsFechados } = this.metricas;
+            const totalBugs = bugsAbertos + bugsFechados;
+            const totalDefects = defectsAbertos + defectsFechados;
 
-        // Taxa de correção de bugs (produção)
-        this.metricas.taxaCorrecaoBugs = totalBugs > 0 ? (bugsFechados / totalBugs) * 100 : 0;
+            this.metricas.taxaCorrecaoBugs = totalBugs > 0 ? (bugsFechados / totalBugs) * 100 : 0;
+            this.metricas.taxaCorrecaoDefects = totalDefects > 0 ? (defectsFechados / totalDefects) * 100 : 0;
 
-        // Taxa de correção de defects (desenvolvimento)
-        this.metricas.taxaCorrecaoDefects = totalDefects > 0 ? (defectsFechados / totalDefects) * 100 : 0;
+            const { historiasTotais, historiasAceitas } = this.metricas;
+            this.metricas.aceitacaoHistorias = historiasTotais > 0 ? (historiasAceitas / historiasTotais) * 100 : 0;
+            this.metricas.statusAceitacaoHistorias = this.classificarAceitacaoHistorias(this.metricas.aceitacaoHistorias);
 
-        // Aceitação de História de Usuário
-        const { historiasTotais, historiasAceitas } = this.metricas;
-        this.metricas.aceitacaoHistorias = historiasTotais > 0 ? (historiasAceitas / historiasTotais) * 100 : 0;
-        this.metricas.statusAceitacaoHistorias = this.classificarAceitacaoHistorias(this.metricas.aceitacaoHistorias);
+            const { testesExecutados, testesPassaram } = this.metricas;
+            this.metricas.taxaSucessoTestes = testesExecutados > 0 ? (testesPassaram / testesExecutados) * 100 : 0;
 
-        // Taxa de sucesso dos testes
-        const { testesExecutados, testesPassaram } = this.metricas;
-        this.metricas.taxaSucessoTestes = testesExecutados > 0 ? (testesPassaram / testesExecutados) * 100 : 0;
+            this.metricas.statusGeral = this.calcularStatusGeral();
+        }
 
-        // Status geral baseado nas métricas
-        this.metricas.statusGeral = this.calcularStatusGeral();
-
-        // Pontos positivos e de atenção
-        this.metricas.pontosPositivos = this.gerarPontosPositivos();
-        this.metricas.pontosAtencao = this.gerarPontosAtencao();
+        // Pontos positivos e de atenção usando AnalysisGenerator se disponível
+        if (AnalysisGenerator && typeof AnalysisGenerator.generatePositivePoints === 'function') {
+            this.metricas.pontosPositivos = AnalysisGenerator.generatePositivePoints(this.metricas);
+            this.metricas.pontosAtencao = AnalysisGenerator.generateAttentionPoints(this.metricas);
+        } else {
+            // Fallback: implementação inline original
+            this.metricas.pontosPositivos = this.gerarPontosPositivos();
+            this.metricas.pontosAtencao = this.gerarPontosAtencao();
+        }
     }
 
     calcularStatusGeral() {
-        const score = this.calcularScoreAtual();
+        // Usar MetricsCalculator se disponível
+        if (MetricsCalculator && typeof MetricsCalculator.calculateScore === 'function') {
+            const score = MetricsCalculator.calculateScore(this.metricas);
+            return MetricsCalculator.classifyStatus(score);
+        }
         
+        // Fallback: implementação inline original
+        const score = this.calcularScoreAtual();
         if (score >= 5) return 'EXCELENTE';
         if (score >= 3) return 'BOM';
         if (score >= 2) return 'ATENCAO';
@@ -162,31 +165,26 @@ class QADashboardNova {
     }
 
     calcularScoreAtual() {
+        // Usar MetricsCalculator se disponível
+        if (MetricsCalculator && typeof MetricsCalculator.calculateScore === 'function') {
+            return MetricsCalculator.calculateScore(this.metricas);
+        }
+        
+        // Fallback: implementação inline original
         let score = 0;
         const metas = {
             taxaEscape: 5,
-            mttr: 8,
+            mttr: 16,
             taxaAutomacao: 70,
             taxaAcerto: 85,
             taxaSucessoTestes: 90
         };
 
-        // Taxa de Escape (menor é melhor)
         if (this.metricas.taxaEscape <= metas.taxaEscape) score += 1;
-
-        // MTTR (menor é melhor)
         if (this.metricas.mttr <= metas.mttr) score += 1;
-
-        // Taxa de Acerto (maior é melhor)
         if (this.metricas.taxaAcerto >= metas.taxaAcerto) score += 1;
-
-        // Taxa de Sucesso dos Testes (maior é melhor)
         if (this.metricas.taxaSucessoTestes >= metas.taxaSucessoTestes) score += 1;
-
-        // Bugs em produção (bugs fechados maior que bugs abertos)
         if (this.metricas.bugsFechados > this.metricas.bugsAbertos) score += 1;
-
-        // Aceitação de História de Usuário (maior é melhor, >= 90%)
         if (this.metricas.aceitacaoHistorias >= 90) score += 1;
 
         return score;
@@ -200,10 +198,16 @@ class QADashboardNova {
     }
 
     gerarPontosPositivos() {
+        // Usar AnalysisGenerator se disponível
+        if (AnalysisGenerator && typeof AnalysisGenerator.generatePositivePoints === 'function') {
+            return AnalysisGenerator.generatePositivePoints(this.metricas);
+        }
+        
+        // Fallback: implementação inline original
         const pontos = [];
         const metas = {
             taxaEscape: 5,
-            mttr: 8,
+            mttr: 16,
             taxaAutomacao: 70,
             taxaAcerto: 85,
             taxaSucessoTestes: 90
@@ -237,10 +241,16 @@ class QADashboardNova {
     }
 
     gerarPontosAtencao() {
+        // Usar AnalysisGenerator se disponível
+        if (AnalysisGenerator && typeof AnalysisGenerator.generateAttentionPoints === 'function') {
+            return AnalysisGenerator.generateAttentionPoints(this.metricas);
+        }
+        
+        // Fallback: implementação inline original
         const pontos = [];
         const metas = {
             taxaEscape: 5,
-            mttr: 8,
+            mttr: 16,
             taxaAutomacao: 70,
             taxaAcerto: 85,
             taxaSucessoTestes: 90
@@ -267,7 +277,6 @@ class QADashboardNova {
         if (this.metricas.bugsAbertos > 0) {
             pontos.push(`Bugs abertos em produção: ${this.metricas.bugsAbertos}`);
         }
-        // Verificar se bugs fechados não são maiores que bugs abertos
         if (this.metricas.bugsFechados <= this.metricas.bugsAbertos && (this.metricas.bugsAbertos > 0 || this.metricas.bugsFechados > 0)) {
             pontos.push(`Bugs em produção: fechados (${this.metricas.bugsFechados}) não superam abertos (${this.metricas.bugsAbertos})`);
         }
@@ -375,7 +384,7 @@ class QADashboardNova {
         document.getElementById('taxa-escape-progress').style.width = `${Math.min(taxaEscapeProgress, 100)}%`;
 
         // MTTR (invertido - menor é melhor)
-        const mttrProgress = (8 - this.metricas.mttr) / 8 * 100;
+        const mttrProgress = (16 - this.metricas.mttr) / 16 * 100;
         document.getElementById('mttr-progress').style.width = `${Math.max(mttrProgress, 0)}%`;
 
         // Taxa de Automação
@@ -432,63 +441,68 @@ class QADashboardNova {
 
         avisosContainer.innerHTML = '';
 
-        const {
-            falhaRequisito,
-            falhaManualPreRelease,
-            falhaAutomatizadaPreRelease,
-            falhaManualRelease,
-            falhaAutomatizadaRelease,
-            falhaProducao
-        } = this.metricas;
+        // Usar AnalysisGenerator se disponível
+        let avisos = [];
+        let parabens = [];
+        
+        if (AnalysisGenerator && typeof AnalysisGenerator.generateFailureAlerts === 'function') {
+            avisos = AnalysisGenerator.generateFailureAlerts(this.metricas);
+            parabens = AnalysisGenerator.generateSuccessMessages(this.metricas);
+        } else {
+            // Fallback: implementação inline original
+            const {
+                falhaRequisito,
+                falhaManualPreRelease,
+                falhaAutomatizadaPreRelease,
+                falhaManualRelease,
+                falhaAutomatizadaRelease,
+                falhaProducao
+            } = this.metricas;
 
-        // Definir limite para considerar "números altos"
-        const limiteAlto = 2; // Se tiver 2 ou mais, é considerado alto
+            const limiteAlto = 2;
 
-        // Avisos de atenção para falhas em fases tardias
-        const avisos = [];
-        if (falhaManualRelease >= limiteAlto) {
-            avisos.push({
-                tipo: 'atencao',
-                mensagem: `⚠️ Atenção: ${falhaManualRelease} falha(s) manual(is) detectada(s) durante os testes da Release. É importante verificar o porque essas falhas não foram detectadas na fase de Pré-Release.`
-            });
-        }
-        if (falhaAutomatizadaRelease >= limiteAlto) {
-            avisos.push({
-                tipo: 'atencao',
-                mensagem: `⚠️ Atenção: ${falhaAutomatizadaRelease} falha(s) automatizada(s) detectada(s) durante os testes da Release. É importante verificar o porque essas falhas não foram detectadas na fase de Pré-Release.`
-            });
-        }
-        if (falhaProducao >= limiteAlto) {
-            avisos.push({
-                tipo: 'atencao',
-                mensagem: `🚨 Atenção Crítica: ${falhaProducao} falha(s) detectada(s) em Produção. Ação imediata necessária! É importante verificar o porque essas falhas não foram detectadas na fase de Pré-Release e Release.`
-            });
-        } else if (falhaProducao > 0) {
-            avisos.push({
-                tipo: 'atencao',
-                mensagem: `⚠️ Atenção: ${falhaProducao} falha(s) detectada(s) em Produção. Revise todo o processo para verificar onde essas falhas poderiam ser evitadas.`
-            });
-        }
+            if (falhaManualRelease >= limiteAlto) {
+                avisos.push({
+                    tipo: 'atencao',
+                    mensagem: `⚠️ Atenção: ${falhaManualRelease} falha(s) manual(is) detectada(s) durante os testes da Release. É importante verificar o porque essas falhas não foram detectadas na fase de Pré-Release.`
+                });
+            }
+            if (falhaAutomatizadaRelease >= limiteAlto) {
+                avisos.push({
+                    tipo: 'atencao',
+                    mensagem: `⚠️ Atenção: ${falhaAutomatizadaRelease} falha(s) automatizada(s) detectada(s) durante os testes da Release. É importante verificar o porque essas falhas não foram detectadas na fase de Pré-Release.`
+                });
+            }
+            if (falhaProducao >= limiteAlto) {
+                avisos.push({
+                    tipo: 'atencao',
+                    mensagem: `🚨 Atenção Crítica: ${falhaProducao} falha(s) detectada(s) em Produção. Ação imediata necessária! É importante verificar o porque essas falhas não foram detectadas na fase de Pré-Release e Release.`
+                });
+            } else if (falhaProducao > 0) {
+                avisos.push({
+                    tipo: 'atencao',
+                    mensagem: `⚠️ Atenção: ${falhaProducao} falha(s) detectada(s) em Produção. Revise todo o processo para verificar onde essas falhas poderiam ser evitadas.`
+                });
+            }
 
-        // Parabéns para falhas detectadas cedo
-        const parabens = [];
-        if (falhaRequisito >= limiteAlto) {
-            parabens.push({
-                tipo: 'sucesso',
-                mensagem: `✅ Parabéns! ${falhaRequisito} falha(s) de requisito detectada(s) cedo. O time está identificando inconsistências antes do desenvolvimento!`
-            });
-        }
-        if (falhaManualPreRelease >= limiteAlto) {
-            parabens.push({
-                tipo: 'sucesso',
-                mensagem: `✅ Parabéns! ${falhaManualPreRelease} falha(s) manual(is) detectada(s) em Pré-Release. Os testes manuais estão funcionando bem!`
-            });
-        }
-        if (falhaAutomatizadaPreRelease >= limiteAlto) {
-            parabens.push({
-                tipo: 'sucesso',
-                mensagem: `✅ Parabéns! ${falhaAutomatizadaPreRelease} falha(s) automatizada(s) detectada(s) em Pré-Release. A automação está capturando problemas cedo!`
-            });
+            if (falhaRequisito >= limiteAlto) {
+                parabens.push({
+                    tipo: 'sucesso',
+                    mensagem: `✅ Parabéns! ${falhaRequisito} falha(s) de requisito detectada(s) cedo. O time está identificando inconsistências antes do desenvolvimento!`
+                });
+            }
+            if (falhaManualPreRelease >= limiteAlto) {
+                parabens.push({
+                    tipo: 'sucesso',
+                    mensagem: `✅ Parabéns! ${falhaManualPreRelease} falha(s) manual(is) detectada(s) em Pré-Release. Os testes manuais estão funcionando bem!`
+                });
+            }
+            if (falhaAutomatizadaPreRelease >= limiteAlto) {
+                parabens.push({
+                    tipo: 'sucesso',
+                    mensagem: `✅ Parabéns! ${falhaAutomatizadaPreRelease} falha(s) automatizada(s) detectada(s) em Pré-Release. A automação está capturando problemas cedo!`
+                });
+            }
         }
 
         // Exibir parabéns primeiro (positivo)
@@ -593,8 +607,8 @@ class QADashboardNova {
                                 family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
                             },
                             padding: {
-                                top: 10,
-                                bottom: 20
+                                top: 30,
+                                bottom: 40
                             },
                             color: '#2c3e50'
                         },
@@ -743,7 +757,7 @@ class QADashboardNova {
                         borderWidth: 1
                     }, {
                         label: 'Meta',
-                        data: [5, 8, 85, 90, 90],
+                        data: [5, 16, 85, 90, 90],
                         backgroundColor: '#95a5a6',
                         borderColor: '#7f8c8d',
                         borderWidth: 1
@@ -1061,7 +1075,7 @@ class QADashboardNova {
             // Atualizar também as metas (incluindo a meta de aceitação que é 90%)
             this.charts.metas.data.datasets[1].data = [
                 5,  // Taxa Escape meta
-                8,  // MTTR meta
+                16,  // MTTR meta
                 85, // Acerto meta
                 90, // Aceitação meta
                 90  // Sucesso Testes meta
@@ -1105,10 +1119,17 @@ class QADashboardNova {
     }
 
     limparDados() {
-        // Limpar formulário
-        document.querySelectorAll('#entrada-dados input').forEach(input => {
-            input.value = '';
-        });
+        // Usar DataCollector se disponível
+        if (DataCollector && typeof DataCollector.clearForm === 'function') {
+            DataCollector.clearForm();
+        } else {
+            // Fallback: implementação inline original
+            document.querySelectorAll('#entrada-dados input').forEach(input => {
+                input.value = '';
+            });
+            const observacoes = document.getElementById('observacoes');
+            if (observacoes) observacoes.value = '';
+        }
 
         // Esconder dashboard
         document.getElementById('dashboard').classList.add('hidden');

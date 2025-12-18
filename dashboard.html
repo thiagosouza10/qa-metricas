@@ -21,363 +21,9 @@
     <!-- html2canvas para capturar gráficos -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
-    <style>
-        :root {
-            --primary-color: #2c3e50;
-            --success-color: #27ae60;
-            --warning-color: #f39c12;
-            --danger-color: #e74c3c;
-            --info-color: #3498db;
-            --light-bg: #f8f9fa;
-        }
-        
-        body {
-            background-color: var(--light-bg);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .navbar-brand {
-            font-weight: bold;
-            color: var(--primary-color) !important;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .navbar-brand img.logo-argo {
-            height: 32px;
-            width: 32px;
-            object-fit: contain;
-        }
-        
-        .nav-link.argo-quality-link {
-            color: var(--info-color) !important;
-            font-weight: 600;
-            padding: 0.5rem 1rem !important;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            margin-right: 0.5rem;
-        }
-        
-        .nav-link.argo-quality-link:hover {
-            background-color: rgba(52, 144, 219, 0.1);
-            color: var(--info-color) !important;
-            transform: translateY(-1px);
-        }
-        
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-            margin-bottom: 1.5rem;
-        }
-        
-        .card:hover {
-            transform: translateY(-2px);
-        }
-        
-        .metric-card {
-            text-align: center;
-            padding: 2rem;
-        }
-        
-        .metric-value {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-        
-        .metric-label {
-            font-size: 1rem;
-            color: #6c757d;
-            margin-bottom: 1rem;
-        }
-        
-        .status-excelente { color: var(--success-color); }
-        .status-bom { color: var(--info-color); }
-        .status-atencao { color: var(--warning-color); }
-        .status-critico { color: var(--danger-color); }
-        
-        .badge-status {
-            font-size: 0.9rem;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-        }
-        
-        /* Estilos para o header do dashboard melhorado */
-        .dashboard-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 15px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-            color: white;
-        }
-        
-        .dashboard-header h1 {
-            color: white;
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        
-        .dashboard-header .subtitle {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1.1rem;
-            margin-bottom: 0;
-        }
-        
-        .score-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 1.5rem;
-            text-align: center;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            min-width: 200px;
-        }
-        
-        .score-label {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.9);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-        
-        .score-value {
-            font-size: 3rem;
-            font-weight: 800;
-            color: white;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-            line-height: 1;
-            margin-bottom: 0.5rem;
-        }
-        
-        .score-badge {
-            font-size: 1.1rem;
-            padding: 0.5rem 1.5rem;
-            border-radius: 25px;
-            font-weight: 700;
-            display: inline-block;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-        
-        .score-badge.excelente {
-            background: var(--success-color);
-            color: white;
-        }
-        
-        .score-badge.bom {
-            background: var(--info-color);
-            color: white;
-        }
-        
-        .score-badge.atencao {
-            background: var(--warning-color);
-            color: white;
-        }
-        
-        .score-badge.critico {
-            background: var(--danger-color);
-            color: white;
-        }
-        
-        .dashboard-date {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.85rem;
-            margin-top: 0.75rem;
-        }
-        
-        .chart-container {
-            position: relative;
-            height: 300px;
-            margin: 1rem 0;
-        }
-        
-        .form-section {
-            background: white;
-            border-radius: 15px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .btn-custom {
-            border-radius: 10px;
-            padding: 0.75rem 1.5rem;
-            font-weight: 600;
-        }
-        
-        .progress-custom {
-            height: 8px;
-            border-radius: 10px;
-        }
-
-        .help-item {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 1.5rem;
-            border-left: 4px solid var(--info-color);
-        }
-
-        .help-item h6 {
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-
-        .help-item p {
-            margin-bottom: 0.5rem;
-        }
-
-        .alert.argo-quality-alert {
-            border-left: 4px solid var(--info-color);
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .alert.argo-quality-alert .alert-heading {
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-
-        .alert.argo-quality-alert .alert-link {
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .alert.argo-quality-alert .alert-link:hover {
-            text-decoration: underline;
-            transform: translateX(3px);
-        }
-
-        .section-title {
-            color: var(--primary-color);
-            font-weight: bold;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 3px solid var(--info-color);
-        }
-        
-        .input-group-custom {
-            margin-bottom: 1rem;
-        }
-        
-        .input-group-custom label {
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 0.5rem;
-        }
-        
-        .input-group-custom input {
-            border-radius: 10px;
-            border: 2px solid #e9ecef;
-            padding: 0.75rem;
-        }
-        
-        .input-group-custom input:focus {
-            border-color: var(--info-color);
-            box-shadow: 0 0 0 0.2rem rgba(52, 144, 219, 0.25);
-        }
-        
-        .input-group-custom label.small {
-            font-size: 0.875rem;
-            margin-bottom: 0.25rem;
-        }
-        
-        .input-group-custom .form-control-sm {
-            padding: 0.5rem;
-            font-size: 0.875rem;
-        }
-        
-        .hidden {
-            display: none !important;
-        }
-        
-        /* Estilos para separação visual dos tópicos do dashboard */
-        .dashboard-topic-section {
-            margin-top: 3rem;
-            margin-bottom: 2rem;
-            padding-top: 2rem;
-            border-top: 3px solid #e9ecef;
-            position: relative;
-        }
-        
-        .dashboard-topic-section:first-of-type {
-            border-top: none;
-            padding-top: 0;
-            margin-top: 0;
-        }
-        
-        .dashboard-topic-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        
-        .dashboard-topic-header h4 {
-            margin: 0;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: white;
-        }
-        
-        .dashboard-topic-header.falhas {
-            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
-            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.2);
-        }
-        
-        .dashboard-topic-header.criticas {
-            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
-            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.2);
-        }
-        
-        .dashboard-topic-header.eficiencia {
-            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
-            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.2);
-        }
-        
-        .dashboard-topic-header.testes {
-            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
-            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.2);
-        }
-        
-        .dashboard-topic-header.comparacao {
-            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
-            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.2);
-        }
-        
-        .dashboard-topic-header.resumo {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            box-shadow: 0 4px 15px rgba(52, 144, 219, 0.2);
-        }
-        
-        @media (max-width: 768px) {
-            .metric-value {
-                font-size: 2rem;
-            }
-            
-            .chart-container {
-                height: 250px;
-            }
-            
-            .form-section {
-                padding: 1rem;
-            }
-        }
-    </style>
+    <!-- CSS Customizado -->
+    <link rel="stylesheet" href="css/dashboard.css">
+    
 </head>
 <body>
     <!-- Navbar -->
@@ -510,7 +156,7 @@
                             <div class="input-group-custom">
                                 <label for="mttr">MTTR - Tempo Médio Resolução (horas)</label>
                                 <input type="number" id="mttr" class="form-control" placeholder="Ex: 6.2" step="0.1" min="0">
-                                <small class="form-text text-muted">Meta: < 8h</small>
+                                <small class="form-text text-muted">Meta: < 16h</small>
                             </div>
                             
                             <div class="input-group-custom">
@@ -862,7 +508,7 @@
                             <strong>Exemplo:</strong> 3 bugs corrigidos em 2h, 4h e 8h: (2+4+8) ÷ 3 = 4.7 horas
                         </p>
                         <div class="alert alert-success py-2">
-                            <small><strong>Meta:</strong> Menor que 8h - Indica eficiência na correção</small>
+                            <small><strong>Meta:</strong> Menor que 16h - Indica eficiência na correção</small>
                         </div>
                     </div>
 
@@ -1117,7 +763,7 @@
                             <div class="progress progress-custom">
                                 <div id="mttr-progress" class="progress-bar bg-warning" role="progressbar" style="width: 77.5%"></div>
                             </div>
-                            <small class="text-muted">Meta: < 8h</small>
+                            <small class="text-muted">Meta: < 16h</small>
                         </div>
                     </div>
                 </div>
@@ -1366,6 +1012,9 @@
                             <div class="text-center">
                                 <div id="taxa-sucesso-testes-valor" class="h4 mb-1">0%</div>
                                 <small class="text-muted">Taxa de sucesso</small>
+                                <div class="mt-2">
+                                    <small class="text-muted">Meta: ≥ 90%</small>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1502,6 +1151,11 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Módulos JavaScript (carregados antes do dashboard principal) -->
+    <script src="js/modules/DataCollector.js"></script>
+    <script src="js/modules/MetricsCalculator.js"></script>
+    <script src="js/modules/AnalysisGenerator.js"></script>
     
     <!-- JavaScript Principal -->
     <script src="js/dashboard.js"></script>
