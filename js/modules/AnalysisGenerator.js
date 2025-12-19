@@ -12,6 +12,18 @@ const METAS = {
     aceitacaoHistorias: 90
 };
 
+// Função para formatar valores igual ao gráfico Comparação Métricas VS Metas
+function formatMetricValue(value) {
+    let formattedValue = value.toFixed(2);
+    // Remove zeros desnecessários no final
+    formattedValue = parseFloat(formattedValue).toString();
+    // Garante pelo menos uma casa decimal quando for inteiro
+    if (!formattedValue.includes('.')) {
+        formattedValue = value.toFixed(1);
+    }
+    return formattedValue;
+}
+
 class AnalysisGenerator {
     /**
      * Gera pontos positivos baseados nas métricas
@@ -79,11 +91,11 @@ class AnalysisGenerator {
         }
         if (metricas.aceitacaoHistorias < 90) {
             if (metricas.aceitacaoHistorias < 70) {
-                pontos.push(`Aceitação de histórias crítica: ${metricas.aceitacaoHistorias.toFixed(1)}%`);
+                pontos.push(`Aceitação de histórias crítica: ${formatMetricValue(metricas.aceitacaoHistorias)}%`);
             } else if (metricas.aceitacaoHistorias < 80) {
-                pontos.push(`Aceitação de histórias requer atenção: ${metricas.aceitacaoHistorias.toFixed(1)}%`);
+                pontos.push(`Aceitação de histórias requer atenção: ${formatMetricValue(metricas.aceitacaoHistorias)}%`);
             } else {
-                pontos.push(`Aceitação de histórias abaixo do excelente: ${metricas.aceitacaoHistorias.toFixed(1)}%`);
+                pontos.push(`Aceitação de histórias abaixo do excelente: ${formatMetricValue(metricas.aceitacaoHistorias)}%`);
             }
         }
 

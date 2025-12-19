@@ -66,7 +66,7 @@ qa-metricas/
 
 - **Falhas durante o Ciclo** - Rastreamento por fase (Requisito, Pré-Release, Release, Produção)
 - **Taxa de Escape** - Percentual de bugs que chegam à produção (< 5%)
-- **MTTR** - Tempo médio de resolução (< 16h)
+- **MTTR** - Tempo médio de resolução (≤ 16h)
 - **Aceitação de Histórias** - Percentual aceito pelo PO (≥ 90%)
 - **Taxa de Automação** - Percentual de testes automatizados
 - **Taxa de Acerto** - Percentual de bugs válidos (≥ 85%)

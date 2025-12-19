@@ -280,13 +280,25 @@ class QADashboardNova {
         if (this.metricas.bugsFechados <= this.metricas.bugsAbertos && (this.metricas.bugsAbertos > 0 || this.metricas.bugsFechados > 0)) {
             pontos.push(`Bugs em produção: fechados (${this.metricas.bugsFechados}) não superam abertos (${this.metricas.bugsAbertos})`);
         }
+        // Função para formatar valores igual ao gráfico Comparação Métricas VS Metas
+        const formatMetricValue = (value) => {
+            let formattedValue = value.toFixed(2);
+            // Remove zeros desnecessários no final
+            formattedValue = parseFloat(formattedValue).toString();
+            // Garante pelo menos uma casa decimal quando for inteiro
+            if (!formattedValue.includes('.')) {
+                formattedValue = value.toFixed(1);
+            }
+            return formattedValue;
+        };
+
         if (this.metricas.aceitacaoHistorias < 90) {
             if (this.metricas.aceitacaoHistorias < 70) {
-                pontos.push(`Aceitação de histórias crítica: ${this.metricas.aceitacaoHistorias.toFixed(1)}%`);
+                pontos.push(`Aceitação de histórias crítica: ${formatMetricValue(this.metricas.aceitacaoHistorias)}%`);
             } else if (this.metricas.aceitacaoHistorias < 80) {
-                pontos.push(`Aceitação de histórias requer atenção: ${this.metricas.aceitacaoHistorias.toFixed(1)}%`);
+                pontos.push(`Aceitação de histórias requer atenção: ${formatMetricValue(this.metricas.aceitacaoHistorias)}%`);
             } else {
-                pontos.push(`Aceitação de histórias abaixo do excelente: ${this.metricas.aceitacaoHistorias.toFixed(1)}%`);
+                pontos.push(`Aceitação de histórias abaixo do excelente: ${formatMetricValue(this.metricas.aceitacaoHistorias)}%`);
             }
         }
 
