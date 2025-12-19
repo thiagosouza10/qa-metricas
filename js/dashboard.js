@@ -110,6 +110,7 @@ class QADashboardNova {
         if (MetricsCalculator && typeof MetricsCalculator.calculateDerivedMetrics === 'function') {
             this.metricas = MetricsCalculator.calculateDerivedMetrics(this.metricas);
             this.metricas.statusAceitacaoHistorias = MetricsCalculator.classifyAceitacaoHistorias(this.metricas.aceitacaoHistorias);
+            this.metricas.statusTaxaSucessoTestes = MetricsCalculator.classifyTaxaSucessoTestes(this.metricas.taxaSucessoTestes);
             this.metricas.statusGeral = MetricsCalculator.classifyStatus(MetricsCalculator.calculateScore(this.metricas));
         } else {
             // Fallback: implementação inline original
@@ -134,6 +135,7 @@ class QADashboardNova {
 
             const { testesExecutados, testesPassaram } = this.metricas;
             this.metricas.taxaSucessoTestes = testesExecutados > 0 ? (testesPassaram / testesExecutados) * 100 : 0;
+            this.metricas.statusTaxaSucessoTestes = this.classificarTaxaSucessoTestes(this.metricas.taxaSucessoTestes);
 
             this.metricas.statusGeral = this.calcularStatusGeral();
         }
@@ -177,7 +179,7 @@ class QADashboardNova {
             mttr: 16,
             taxaAutomacao: 70,
             taxaAcerto: 85,
-            taxaSucessoTestes: 90
+            taxaSucessoTestes: 95
         };
 
         if (this.metricas.taxaEscape <= metas.taxaEscape) score += 1;
@@ -197,6 +199,13 @@ class QADashboardNova {
         return 'CRITICO';
     }
 
+    classificarTaxaSucessoTestes(percentual) {
+        if (percentual >= 95) return 'EXCELENTE';
+        if (percentual >= 85) return 'BOM';
+        if (percentual >= 75) return 'MONITORAR';
+        return 'ALERTA';
+    }
+
     gerarPontosPositivos() {
         // Usar AnalysisGenerator se disponível
         if (AnalysisGenerator && typeof AnalysisGenerator.generatePositivePoints === 'function') {
@@ -210,7 +219,7 @@ class QADashboardNova {
             mttr: 16,
             taxaAutomacao: 70,
             taxaAcerto: 85,
-            taxaSucessoTestes: 90
+            taxaSucessoTestes: 95
         };
 
         if (this.metricas.taxaEscape <= metas.taxaEscape) {
@@ -253,7 +262,7 @@ class QADashboardNova {
             mttr: 16,
             taxaAutomacao: 70,
             taxaAcerto: 85,
-            taxaSucessoTestes: 90
+            taxaSucessoTestes: 95
         };
 
         if (this.metricas.taxaEscape > metas.taxaEscape) {
@@ -346,6 +355,25 @@ class QADashboardNova {
         document.getElementById('testes-passaram-valor').textContent = this.metricas.testesPassaram;
         document.getElementById('testes-automatizados-valor').textContent = this.metricas.testesAutomatizados;
         document.getElementById('taxa-sucesso-testes-valor').textContent = `${this.metricas.taxaSucessoTestes.toFixed(1)}%`;
+        
+        // Atualizar status da Taxa de Sucesso dos Testes
+        const statusTaxaSucesso = this.metricas.statusTaxaSucessoTestes || 'BOM';
+        const statusElementTaxaSucesso = document.getElementById('taxa-sucesso-testes-status');
+        if (statusElementTaxaSucesso) {
+            const statusLabels = {
+                'EXCELENTE': 'EXCELENTE',
+                'BOM': 'BOM',
+                'MONITORAR': 'MONITORAR',
+                'ALERTA': 'ALERTA'
+            };
+            const statusColors = {
+                'EXCELENTE': 'bg-success',
+                'BOM': 'bg-primary',
+                'MONITORAR': 'bg-warning',
+                'ALERTA': 'bg-danger'
+            };
+            statusElementTaxaSucesso.innerHTML = `<span class="badge badge-status ${statusColors[statusTaxaSucesso] || 'bg-secondary'}">${statusLabels[statusTaxaSucesso] || statusTaxaSucesso}</span>`;
+        }
 
         // Atualizar status geral
         const statusElement = document.getElementById('status-geral');
@@ -1122,8 +1150,32 @@ class QADashboardNova {
                 16,  // MTTR meta
                 85, // Acerto meta
                 90, // Aceitação meta
-                90  // Sucesso Testes meta
+                95  // Sucesso Testes meta
             ];
+            
+            // Calcular o máximo dinamicamente baseado nos dados
+            const allValues = [
+                ...this.charts.metas.data.datasets[0].data,
+                ...this.charts.metas.data.datasets[1].data
+            ];
+            const maxValue = Math.max(...allValues);
+            
+            // Calcular o máximo do eixo Y: adicionar 10% de margem e arredondar
+            let maxY;
+            if (maxValue <= 100) {
+                maxY = 100;
+            } else {
+                // Adicionar 10% de margem e arredondar para o próximo múltiplo de 10
+                maxY = Math.ceil((maxValue * 1.1) / 10) * 10;
+            }
+            
+            // Calcular stepSize dinamicamente (aproximadamente 5 divisões principais)
+            const stepSize = maxY <= 100 ? 20 : Math.ceil(maxY / 5 / 10) * 10;
+            
+            // Atualizar o máximo e stepSize do eixo Y
+            this.charts.metas.options.scales.y.max = maxY;
+            this.charts.metas.options.scales.y.ticks.stepSize = stepSize;
+            
             this.charts.metas.update();
         }
 

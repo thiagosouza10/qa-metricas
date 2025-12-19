@@ -8,7 +8,7 @@ const METAS = {
     mttr: 16,
     taxaAutomacao: 70,
     taxaAcerto: 85,
-    taxaSucessoTestes: 90,
+    taxaSucessoTestes: 95,
     aceitacaoHistorias: 90
 };
 
@@ -41,7 +41,9 @@ class AnalysisGenerator {
             pontos.push('Excelente taxa de acerto');
         }
         if (metricas.taxaSucessoTestes >= METAS.taxaSucessoTestes) {
-            pontos.push('Taxa de sucesso dos testes dentro da meta');
+            pontos.push(`Taxa de sucesso dos testes: EXCELENTE (${formatMetricValue(metricas.taxaSucessoTestes)}%)`);
+        } else if (metricas.taxaSucessoTestes >= 85) {
+            pontos.push(`Taxa de sucesso dos testes: BOM (${formatMetricValue(metricas.taxaSucessoTestes)}%)`);
         }
         if (metricas.falhaProducao === 0) {
             pontos.push('Nenhuma falha em produção');
@@ -96,6 +98,18 @@ class AnalysisGenerator {
                 pontos.push(`Aceitação de histórias requer atenção: ${formatMetricValue(metricas.aceitacaoHistorias)}%`);
             } else {
                 pontos.push(`Aceitação de histórias abaixo do excelente: ${formatMetricValue(metricas.aceitacaoHistorias)}%`);
+            }
+        }
+        
+        // Taxa de Sucesso dos Testes - análise detalhada
+        if (metricas.taxaSucessoTestes < METAS.taxaSucessoTestes) {
+            const taxaSucesso = metricas.taxaSucessoTestes || 0;
+            if (taxaSucesso < 75) {
+                pontos.push(`Taxa de sucesso dos testes: ALERTA (${formatMetricValue(taxaSucesso)}%)`);
+            } else if (taxaSucesso < 85) {
+                pontos.push(`Taxa de sucesso dos testes: MONITORAR (${formatMetricValue(taxaSucesso)}%)`);
+            } else {
+                pontos.push(`Taxa de sucesso dos testes: BOM (${formatMetricValue(taxaSucesso)}%)`);
             }
         }
 

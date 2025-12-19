@@ -23,7 +23,7 @@ O **Status Geral** é calculado através de um sistema de pontuação onde cada 
 1. **Taxa de Escape** ≤ 5%
 2. **MTTR** ≤ 16 horas
 3. **Taxa de Acerto** ≥ 85%
-4. **Taxa de Sucesso dos Testes** ≥ 90%
+4. **Taxa de Sucesso dos Testes** ≥ 95%
 5. **Bugs em Produção** (bugs fechados > bugs abertos)
 6. **Aceitação de Histórias** ≥ 90%
 
@@ -64,13 +64,11 @@ qa-metricas/
 
 ## 📊 Métricas Principais
 
-- **Falhas durante o Ciclo** - Rastreamento por fase (Requisito, Pré-Release, Release, Produção)
-- **Taxa de Escape** - Percentual de bugs que chegam à produção (< 5%)
+- **Falhas durante o Ciclo** - Rastreamento por fase (Requisito, Pré-Release, Release, Bugs em Produção)
+- **Taxa de Escape** - Percentual de bugs que escaparam dos testes e chegaram à produção (≤ 5%)
 - **MTTR** - Tempo médio de resolução (≤ 16h)
 - **Aceitação de Histórias** - Percentual aceito pelo PO (≥ 90%)
 - **Taxa de Automação** - Percentual de testes automatizados
 - **Taxa de Acerto** - Percentual de bugs válidos (≥ 85%)
-
-## 📄 Licença
-
-Este projeto é de uso interno da equipe Argo.
+- **Bugs em Produção** - Bugs fechados > bugs abertos (indica eficiência na correção)
+- **Taxa de Sucesso dos Testes** ≥ 95% (Excelente: ≥95%, Boa: 85-95%, Monitorar: 75-85%, Alerta: <75%)

@@ -7,7 +7,7 @@ export const METAS = {
     mttr: 16,
     taxaAutomacao: 70,
     taxaAcerto: 85,
-    taxaSucessoTestes: 90,
+    taxaSucessoTestes: 95,
     aceitacaoHistorias: 90
 };
 
@@ -23,6 +23,13 @@ export const ACEITACAO_HISTORIAS_CLASSIFICATION = {
     BOM: { min: 80, color: '#3498db' },
     ATENCAO: { min: 70, color: '#f39c12' },
     CRITICO: { min: 0, color: '#e74c3c' }
+};
+
+export const TAXA_SUCESSO_TESTES_CLASSIFICATION = {
+    EXCELENTE: { min: 95, color: '#27ae60', label: 'EXCELENTE' },
+    BOM: { min: 85, color: '#3498db', label: 'BOM' },
+    MONITORAR: { min: 75, color: '#f39c12', label: 'MONITORAR' },
+    ALERTA: { min: 0, color: '#e74c3c', label: 'ALERTA' }
 };
 
 export const CHART_COLORS = {

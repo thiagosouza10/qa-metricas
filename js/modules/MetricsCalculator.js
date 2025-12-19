@@ -8,7 +8,7 @@ const METAS = {
     mttr: 16,
     taxaAutomacao: 70,
     taxaAcerto: 85,
-    taxaSucessoTestes: 90,
+    taxaSucessoTestes: 95,
     aceitacaoHistorias: 90
 };
 
@@ -96,6 +96,16 @@ class MetricsCalculator {
         if (percentual >= 80) return 'BOM';
         if (percentual >= 70) return 'ATENCAO';
         return 'CRITICO';
+    }
+
+    /**
+     * Classifica a taxa de sucesso dos testes
+     */
+    static classifyTaxaSucessoTestes(percentual) {
+        if (percentual >= 95) return 'EXCELENTE';
+        if (percentual >= 85) return 'BOM';
+        if (percentual >= 75) return 'MONITORAR';
+        return 'ALERTA';
     }
 }
 
