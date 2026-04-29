@@ -1,0 +1,17 @@
+# Canais no ytoutube para QA
+
+- [TAT](https://www.youtube.com/talkingabouttesting)
+- [QAzando](https://www.youtube.com/@QAzando)
+- [Agilizei](https://www.youtube.com/channel/UCI_m5uwJjfD7trqcwAB8E3w)
+- [Júlio de Lima](https://www.youtube.com/@JuliodeLimas)
+- [QA Jonatas Martins](https://www.youtube.com/@qajonatasmartins)
+- [QAxperience](https://www.youtube.com/@qaxperience)
+- [PapitoRocks](https://www.youtube.com/@papitorocks)
+- [Qacheadas](https://www.youtube.com/@qacheadas3148)
+- [Cantinho das QA's](https://www.youtube.com/@CantinhodasQAs)
+- [QACamp](https://www.youtube.com/@QACamp)
+- [4ALLTests](https://www.youtube.com/@4ALLTests)
+- [IterasysBrasil](https://www.youtube.com/@IterasysBrasil)
+- [ChronosAcademyBR](https://www.youtube.com/c/ChronosAcademyBR)
+- [Pessonizando](https://www.youtube.com/@pessonizando)
+- [testandosuave](https://www.youtube.com/@testandosuave)
