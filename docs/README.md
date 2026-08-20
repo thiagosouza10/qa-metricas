@@ -4,7 +4,7 @@ Solução **HTML5 + CSS3 + Bootstrap 5 + JavaScript** para métricas essenciais 
 
 ## 🌐 Acesso
 
-- **Dashboard Online**: [https://thiagosouza10.github.io/qa-metricas/dashboard.html](https://thiagosouza10.github.io/qa-metricas/dashboard.html)
+- **Dashboard Online**: https://thiagosouza10.github.io/qualidade-de-software
 
 ## 🚀 Como Usar
 
